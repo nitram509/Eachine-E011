@@ -43,10 +43,9 @@ OBJ += Startup.o
 
 all: $(TARGET)
 
-$(TARGET).hex: $(EXECUTABLE)
-	$(CP) -O ihex $^ $@.hex
 $(TARGET): $(EXECUTABLE)
 	$(CP) -O binary $^ $@
+	$(CP) -O ihex $^ $@.hex
 
 $(EXECUTABLE): $(SRC) $(STARTUP)
 	$(CC) $(CFLAGS) $^ -lm -o $@
