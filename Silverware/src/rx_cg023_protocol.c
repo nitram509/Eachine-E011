@@ -171,18 +171,18 @@ int decode_cg023( void)
 		// swapped yaw - roll (mode 3)
 			if ( rxdata[6] >= 0x80 )
 		{
-			rx[0] = -rxdata[6] * 0.0166666f + 2.1166582f; // yaw
+			rx[ROLL] = -rxdata[6] * 0.0166666f + 2.1166582f; // yaw
 		}
-		else if ( rxdata[6] <= 0x3C ) rx[0] = (1.0f + ( rxdata[6] - 60) * 0.0166666f) ; // yaw
-		else rx[0] = 0.0;
-		rx[2] = - rxdata[8] * 0.0166666f + 2.1166582f; // roll
+		else if ( rxdata[6] <= 0x3C ) rx[ROLL] = (1.0f + ( rxdata[6] - 60) * 0.0166666f) ; // yaw
+		else rx[ROLL] = 0.0;
+		rx[YAW] = - rxdata[8] * 0.0166666f + 2.1166582f; // roll
 
-		rx[1] = - rxdata[7] * 0.0166666f + 2.1166582f;
+		rx[PITCH] = - rxdata[7] * 0.0166666f + 2.1166582f;
 
 #ifndef DISABLE_EXPO
-		rx[0] = rcexpo ( rx[0] , EXPO_XY );
-		rx[1] = rcexpo ( rx[1] , EXPO_XY );
-		rx[2] = rcexpo ( rx[2] , EXPO_YAW );
+		rx[ROLL]  = rcexpo ( rx[ROLL] , EXPO_XY );
+		rx[PITCH] = rcexpo ( rx[PITCH] , EXPO_XY );
+		rx[YAW]   = rcexpo ( rx[YAW] , EXPO_YAW );
 #endif
 
 		// switch flags

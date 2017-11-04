@@ -155,9 +155,9 @@ int decode_h7(void) {
 
 
 #ifndef DISABLE_EXPO
-		rx[0] = rcexpo ( rx[0] , EXPO_XY );
-		rx[1] = rcexpo ( rx[1] , EXPO_XY );
-		rx[2] = rcexpo ( rx[2] , EXPO_YAW );
+		rx[ROLL]  = rcexpo ( rx[ROLL] , EXPO_XY );
+		rx[PITCH] = rcexpo ( rx[PITCH] , EXPO_XY );
+		rx[YAW]   = rcexpo ( rx[YAW] , EXPO_YAW );
 #endif
 
 		for ( int i = 0 ; i < AUXNUMBER - 2 ; i++)

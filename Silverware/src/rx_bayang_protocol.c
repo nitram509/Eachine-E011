@@ -146,17 +146,17 @@ static int decodepacket( void)
 			rx[THROTTLE] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
 
 #ifndef DISABLE_EXPO
-	rx[0] = rcexpo ( rx[0] , EXPO_XY );
-	rx[1] = rcexpo ( rx[1] , EXPO_XY );
-	rx[2] = rcexpo ( rx[2] , EXPO_YAW );
+	rx[ROLL]  = rcexpo ( rx[ROLL] , EXPO_XY );
+	rx[PITCH] = rcexpo ( rx[PITCH] , EXPO_XY );
+	rx[YAW]   = rcexpo ( rx[YAW] , EXPO_YAW );
 #endif
 
 		// trims are 50% of controls at max
 	// trims are not used because they interfere with dynamic trims feature of devo firmware
 
-//			rx[0] = rx[0] + 0.03225 * 0.5 * (float)(((rxdata[4])>>2) - 31);
-//			rx[1] = rx[1] + 0.03225 * 0.5 * (float)(((rxdata[6])>>2) - 31);
-//			rx[2] = rx[2] + 0.03225 * 0.5 * (float)(((rxdata[10])>>2) - 31);
+//			rx[ROLL] = rx[ROLL] + 0.03225 * 0.5 * (float)(((rxdata[4])>>2) - 31);
+//			rx[PITCH] = rx[PITCH] + 0.03225 * 0.5 * (float)(((rxdata[6])>>2) - 31);
+//			rx[YAW] = rx[YAW] + 0.03225 * 0.5 * (float)(((rxdata[10])>>2) - 31);
 
 #ifdef USE_STOCK_TX
 char trims[2];
