@@ -53,7 +53,7 @@
 // Dshot300 is most sensitive to mixes of gpioA
 // it has fastest send time in this implementation
 
-// Dshot150 is pretty insensitive to pin mixes and wire capacitance 
+// Dshot150 is pretty insensitive to pin mixes and wire capacitance
 
 #include "project.h"
 
@@ -133,23 +133,23 @@ void pwm_init()
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	
+
 
 	GPIO_InitStructure.GPIO_Pin = DSHOT_PIN_0 ;
 	GPIO_Init( DSHOT_PORT_0, &GPIO_InitStructure );
-	
+
 	GPIO_InitStructure.GPIO_Pin = DSHOT_PIN_1 ;
 	GPIO_Init( DSHOT_PORT_1, &GPIO_InitStructure );
-	
+
 	GPIO_InitStructure.GPIO_Pin = DSHOT_PIN_2 ;
 	GPIO_Init( DSHOT_PORT_2, &GPIO_InitStructure );
-	
+
 	GPIO_InitStructure.GPIO_Pin = DSHOT_PIN_3 ;
 	GPIO_Init( DSHOT_PORT_3, &GPIO_InitStructure );
 
 	// set failsafetime so signal is off at start
 	pwm_failsafe_time = gettime() - 100000;
-	
+
 	pwmdir = FORWARD;
 }
 
@@ -157,7 +157,7 @@ void pwm_set( uint8_t number, float pwm )
 {
     // if ( number > 3 ) failloop(5);
     if ( number > 3 ) return;
-    
+
 	if ( pwm < 0.0f ) {
 		pwm = 0.0;
 	}
@@ -192,19 +192,19 @@ void pwm_set( uint8_t number, float pwm )
 		if ( ! pwm_failsafe_time ) {
 			pwm_failsafe_time = gettime();
 		} else {
-			// 1s after failsafe we turn off the signal for safety 
+			// 1s after failsafe we turn off the signal for safety
             // this means the escs won't rearm correctly after 2 secs of signal lost
             // usually the quad should be gone by then
 			if ( gettime() - pwm_failsafe_time > 1000000 ) {
 				value = 0;
-                
+
                 gpioreset( DSHOT_PORT_0, DSHOT_PIN_0 );
                 gpioreset( DSHOT_PORT_1, DSHOT_PIN_1 );
                 gpioreset( DSHOT_PORT_2, DSHOT_PIN_2 );
                 gpioreset( DSHOT_PORT_3, DSHOT_PIN_3 );
                 //////
                 return;
-      
+
 			}
 		}
 	} else {
@@ -216,32 +216,32 @@ void pwm_set( uint8_t number, float pwm )
 	if ( number == 3 ) {
 
         #ifdef DSHOT600
-        __disable_irq(); 
+        __disable_irq();
         bitbang_data1();
         __enable_irq();
         __ISB();
-        __disable_irq();         
+        __disable_irq();
         bitbang_data2();
         __enable_irq();
         __ISB();
-        __disable_irq();   
+        __disable_irq();
         bitbang_data3();
         __enable_irq();
         __ISB();
-        __disable_irq();  
+        __disable_irq();
         bitbang_data4();
         __enable_irq();
-        #else  
-        __disable_irq();    
+        #else
+        __disable_irq();
 		bitbang_data();
         __enable_irq();
         #endif
-       for ( uint8_t i = 0; i < 48; ++i ) 
-       {		
+       for ( uint8_t i = 0; i < 48; ++i )
+       {
 		motor_data[ i ] = 0;
        }
 	}
-    
+
 }
 
 void make_packet( uint8_t number, uint16_t value, bool telemetry )
@@ -254,11 +254,11 @@ void make_packet( uint8_t number, uint16_t value, bool telemetry )
 		csum ^= csum_data; // xor data by nibbles
 		csum_data >>= 4;
 	}
-    
+
 	csum &= 0xf;
 	// append checksum
 	packet = ( packet << 4 ) | csum;
- 
+
 	// generate pulses for whole packet
 	for ( uint8_t i = 0; i < 16; ++i ) {
 		if ( packet & 0x8000 ) { // MSB first
@@ -281,7 +281,7 @@ void make_packet( uint8_t number, uint16_t value, bool telemetry )
 
 #define D600_DELAY   __asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP} \
     __asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP} \
-    //__asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP} 
+    //__asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP}
 
 
 void bitbang_data1()
@@ -295,10 +295,10 @@ void bitbang_data1()
 			__asm{NOP}
 			gpioreset( DSHOT_PORT_0, DSHOT_PIN_0 );
 		}
- 
+
 
   D600_DELAY;
-    
+
 
 	}
 }
@@ -307,7 +307,7 @@ void bitbang_data1()
 void bitbang_data2()
 {
 	for ( uint8_t i = 0; i < 48; ++i ) {
-      
+
 		if (  motor_data[ i ] & 0x02 ) {
 			gpioset( DSHOT_PORT_1, DSHOT_PIN_1 );  // BL
 		} else {
@@ -316,7 +316,7 @@ void bitbang_data2()
 		}
 
   D600_DELAY;
-    
+
 	}
 }
 
@@ -324,7 +324,7 @@ void bitbang_data2()
 void bitbang_data3()
 {
 	for ( uint8_t i = 0; i < 48; ++i ) {
-   
+
 		if ( motor_data[ i ] & 0x04 ) {
 			gpioset( DSHOT_PORT_2, DSHOT_PIN_2 ); // FR
 		} else {
@@ -332,8 +332,8 @@ void bitbang_data3()
 			gpioreset( DSHOT_PORT_2, DSHOT_PIN_2 );
 		}
 
-  D600_DELAY; 
-    
+  D600_DELAY;
+
 	}
 }
 
@@ -341,7 +341,7 @@ void bitbang_data3()
 void bitbang_data4()
 {
 	for ( uint8_t i = 0; i < 48; ++i ) {
-   
+
         if ( motor_data[ i ] & 0x08 ) {
 
 			gpioset( DSHOT_PORT_3, DSHOT_PIN_3 ); // BR
@@ -352,7 +352,7 @@ void bitbang_data4()
 		}
 
   D600_DELAY;
-    
+
 	}
 }
 
@@ -367,7 +367,7 @@ void bitbang_data()
 			__asm{NOP}
 			gpioreset( DSHOT_PORT_0, DSHOT_PIN_0 );
 		}
-        
+
 		if ( motor_data[ i ] & 0x02 ) {
 			gpioset( DSHOT_PORT_1, DSHOT_PIN_1 );  // BL
 		} else {
@@ -381,7 +381,7 @@ void bitbang_data()
             __asm{NOP}
 			gpioreset( DSHOT_PORT_2, DSHOT_PIN_2 );
 		}
-        
+
         if ( motor_data[ i ] & 0x08 ) {
 			gpioset( DSHOT_PORT_3, DSHOT_PIN_3 ); // BR
 		} else {
@@ -395,8 +395,8 @@ void bitbang_data()
 
 		__asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP}
         __asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP}
-       
-        
+
+
 #ifndef LESS_DELAY
       __asm{NOP} __asm{NOP} __asm{NOP} __asm{NOP}
 #endif

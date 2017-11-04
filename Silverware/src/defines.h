@@ -97,14 +97,3 @@
 #define uint32 uint_fast32_t
 #define uint16 uint_fast16_t
 #define uint8 uint_fast8_t
-
-
-
-
-
-
-
-
-
-
-

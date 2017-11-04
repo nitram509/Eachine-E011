@@ -55,7 +55,7 @@ extern char auxchange[AUXNUMBER];
 
 void writeregs ( uint8_t data[] , uint8_t size )
 {
-	
+
 spi_cson();
 for ( uint8_t i = 0 ; i < size ; i++)
 {
@@ -72,7 +72,7 @@ void rx_init()
 {
 
 #ifdef RADIO_XN297
-	
+
 static uint8_t bbcal[6] = { 0x3f , 0x4c , 0x84 , 0x6F , 0x9c , 0x20  };
 
 static uint8_t rfcal[8] = { 0x3e , 0xc9 , 220 , 0x80 , 0x61 , 0xbb , 0xab , 0x9c  };
@@ -83,7 +83,7 @@ writeregs( bbcal , sizeof(bbcal) );
 writeregs( rfcal , sizeof(rfcal) );
 writeregs( demodcal , sizeof(demodcal) );
 #endif
-	
+
 static int rxaddress[5] =  {0x26, 0xA8, 0x67, 0x35, 0xCC};
 
 xn_writerxaddress( rxaddress);
@@ -109,13 +109,13 @@ xn_writerxaddress( rxaddress);
 #ifdef RADIO_CHECK
 void check_radio(void);
  check_radio();
-#endif	
+#endif
 }
 
 
 void check_radio()
-{	
-	int temp = xn_readreg( 0x0f); // rx address pipe 5	
+{
+	int temp = xn_readreg( 0x0f); // rx address pipe 5
 	// should be 0xc6
 	extern void failloop( int);
 	if ( temp != 0xc6) failloop(3);
@@ -135,7 +135,7 @@ static char checkpacket()
       }
     if ((status & B00001110) != B00001110)
       {
-          // rx fifo not empty        
+          // rx fifo not empty
           return 2;
       }
 
@@ -151,8 +151,8 @@ int rxmode = 0;
 
 #define CG023_FLIP_MASK  0x01 // right shoulder (3D flip switch), resets after aileron or elevator has moved and came back to neutral
 #define CG023_EASY_MASK  0x02 // left shoulder (headless mode)
-#define CG023_VIDEO_MASK  0x04 // video camera 
-#define CG023_STILL_MASK  0x08 // still camera 
+#define CG023_VIDEO_MASK  0x04 // video camera
+#define CG023_STILL_MASK  0x08 // still camera
 #define CG023_LED_OFF_MASK  0x10
 #define CG023_RATE_60_MASK  0x20
 #define CG023_RATE_100_MASK 0x40
@@ -164,10 +164,10 @@ int decode_cg023( void)
 		// maybe corrupt packet
 		if ( rxdata[3] != 0 || rxdata[4] != 0  ) return 0;
 		if ( rxdata[1] != txid[0] || rxdata[2] != txid[1] ) return 0;
-		 
-// throttle		 
-		rx[3] = 0.00390625f * rxdata[5]; 
-		 
+
+// throttle
+		rx[3] = 0.00390625f * rxdata[5];
+
 
 		// swapped yaw - roll (mode 3)
 			if ( rxdata[6] >= 0x80 )
@@ -177,17 +177,17 @@ int decode_cg023( void)
 		else if ( rxdata[6] <= 0x3C ) rx[0] = (1.0f + ( rxdata[6] - 60) * 0.0166666f) ; // yaw
 		else rx[0] = 0.0;
 		rx[2] = - rxdata[8] * 0.0166666f + 2.1166582f; // roll
-		
-		rx[1] = - rxdata[7] * 0.0166666f + 2.1166582f; 
-		
+
+		rx[1] = - rxdata[7] * 0.0166666f + 2.1166582f;
+
 #ifndef DISABLE_EXPO
 		rx[0] = rcexpo ( rx[0] , EXPO_XY );
-		rx[1] = rcexpo ( rx[1] , EXPO_XY ); 
-		rx[2] = rcexpo ( rx[2] , EXPO_YAW ); 	
+		rx[1] = rcexpo ( rx[1] , EXPO_XY );
+		rx[2] = rcexpo ( rx[2] , EXPO_YAW );
 #endif
-		
+
 		// switch flags
-		
+
 
 		aux[0] = (rxdata[13] &  CG023_FLIP_MASK)?1:0;
 		aux[1] = (rxdata[13] &  CG023_VIDEO_MASK)?1:0;
@@ -220,13 +220,13 @@ int decode_cg023( void)
 			if ( lastaux[i] != aux[i] ) auxchange[i] = 1;
 			lastaux[i] = aux[i];
 		}
-		
+
 		return 1;
 	 }
 	 else
 	 {
 		 // non data packet
-		 return 0; 
+		 return 0;
 	 }
 //
 }
@@ -240,7 +240,7 @@ int failsafe = 0;
 
 //#define RXDEBUG
 
-#ifdef RXDEBUG	
+#ifdef RXDEBUG
 struct rxdebug rxdebug;
 
 int packetrx;
@@ -252,51 +252,51 @@ unsigned long secondtimer;
 
 void checkrx( void)
 {
-		if ( checkpacket() ) 
-		{ 
+		if ( checkpacket() )
+		{
 			xn_readpayload( rxdata , 15);
 			if ( rxmode == RXMODE_BIND)
-			{	// rx startup , bind mode		
-				if ( rxdata[0] == 0xAA ) 
+			{	// rx startup , bind mode
+				if ( rxdata[0] == 0xAA )
 				{// bind packet received
-		
+
 					txid[0] = rxdata[1];
 					txid[1] = rxdata[2];
-					
-					rxmode = RXMODE_NORMAL;				
 
-				  xn_writereg(0x25, (uint8_t)(rxdata[1] - 0x7D) ); // Set channel frequency	
-								
+					rxmode = RXMODE_NORMAL;
+
+				  xn_writereg(0x25, (uint8_t)(rxdata[1] - 0x7D) ); // Set channel frequency
+
 				}
 			}
 			else
-			{	// normal mode	
-				#ifdef RXDEBUG	
+			{	// normal mode
+				#ifdef RXDEBUG
 				rxdebug.packettime = gettime() - lastrxtime;
 				lastrxtime = gettime();
 				#endif
-				
+
 				int pass = decode_cg023();
-			 
+
 				if ( pass )
-				{ 	
-					failsafetime = gettime(); 
+				{
+					failsafetime = gettime();
 					failsafe = 0;
-					
-				}	
+
+				}
 				else
 				{
-				#ifdef RXDEBUG	
+				#ifdef RXDEBUG
 				rxdebug.failcount++;
-				#endif	
+				#endif
 				}
-			
+
 			}// end normal rx mode
-				
+
 		}// end packet received
 
 		unsigned long time = gettime();
-		
+
 		if( time - failsafetime > FAILSAFETIME )
 		{//  failsafe
 		  failsafe = 1;
@@ -305,7 +305,7 @@ void checkrx( void)
 			rx[2] = 0;
 			rx[3] = 0;
 		}
-#ifdef RXDEBUG	
+#ifdef RXDEBUG
 		// packets per second counter
 			if ( time - secondtimer  > 1000000)
 			{
@@ -316,7 +316,7 @@ void checkrx( void)
 #endif
 
 }
-	
+
 
 
 // end cg023 proto

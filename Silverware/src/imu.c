@@ -72,13 +72,13 @@ float Q_rsqrt( float number )
 
 	x2 = number * 0.5F;
 	y  = number;
-	i  = * ( long * ) &y;                       
-	i  = 0x5f3759df - ( i >> 1 );               
+	i  = * ( long * ) &y;
+	i  = 0x5f3759df - ( i >> 1 );
 	y  = * ( float * ) &i;
 	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
 	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
 //	y  = y * ( threehalfs - ( x2 * y * y ) );   // 3nd iteration, this can be removed
-	
+
 	return y;
 }
 
@@ -125,7 +125,7 @@ void imu_calc(void)
 	  {
 		  accel[i] *= ( 1/ 2048.0f);
 	  }
-	
+
 
 	float deltaGyroAngle[3];
 
@@ -133,8 +133,8 @@ void imu_calc(void)
     {
         deltaGyroAngle[i] = (gyro[i]) * looptime;
     }
-	
-	
+
+
 	GEstG[2] = GEstG[2] - (deltaGyroAngle[0]) * GEstG[0];
 	GEstG[0] = (deltaGyroAngle[0]) * GEstG[2] +  GEstG[0];
 
@@ -154,12 +154,12 @@ void imu_calc(void)
 
 
 	if ((accmag > ACC_MIN * ACC_1G) && (accmag < ACC_MAX * ACC_1G) && !DISABLE_ACC)
-	  {			 
+	  {
         // normalize acc
         for (int axis = 0; axis < 3; axis++)
         {
             accel[axis] = accel[axis] * ( ACC_1G / accmag);
-        }       
+        }
         float filtcoeff = lpfcalc_hz( looptime, 1.0f/(float)FILTERTIME);
         for (int x = 0; x < 3; x++)
           {
@@ -210,4 +210,3 @@ float atan2approx(float y, float x)
 		dphi -= 2 * M_PI;
 	return RADTODEG * dphi;
 }
-

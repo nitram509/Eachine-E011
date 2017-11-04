@@ -27,7 +27,7 @@ extern char aux[];
 #define DOWNSAMPLE 16
 
 #define RGB_FILTER_TIME FILTERCALC( 1000*DOWNSAMPLE , RGB_FILTER_TIME_MICROSECONDS)
-#define RGB( r , g , b ) ( ( ((int)g&0xff)<<16)|( ((int)r&0xff)<<8)|( (int)b&0xff )) 
+#define RGB( r , g , b ) ( ( ((int)g&0xff)<<16)|( ((int)r&0xff)<<8)|( (int)b&0xff ))
 
 extern	void rgb_send( int data);
 
@@ -39,14 +39,14 @@ extern	void rgb_send( int data);
 int rgb_led_value[RGB_LED_NUMBER];
 // loop count for downsampling
 int rgb_loopcount = 0;
-//rgb low pass filter variables 
+//rgb low pass filter variables
 float r_filt, g_filt, b_filt;
 
 
 // sets all leds to a brightness
 void rgb_led_set_all( int rgb )
 {
-#ifdef RGB_FILTER_ENABLE	
+#ifdef RGB_FILTER_ENABLE
 // deconstruct the colour into components
 int g = rgb>>16;
 int r = (rgb&0x0000FF00)>>8;
@@ -58,10 +58,10 @@ lpf( &g_filt, g , RGB_FILTER_TIME);
 lpf( &b_filt, b , RGB_FILTER_TIME);
 
 	int temp = RGB( r_filt , g_filt , b_filt );
-	
+
 for ( int i = 0 ; i < RGB_LED_NUMBER ; i++)
 	rgb_led_value[i] = temp;
-	
+
 #else
 for ( int i = 0 ; i < RGB_LED_NUMBER ; i++)
 	rgb_led_value[i] = rgb;
@@ -114,18 +114,18 @@ void rgb_knight_rider( void)
 			kr_dir =!kr_dir;
 	}
 
-// calculate led value	
+// calculate led value
 for ( int i = 0 ; i < RGB_LED_NUMBER ; i++)
 	{
-		float led_bright = fabsf( (float) i - kr_position);	
-		if ( led_bright > 1.0f) led_bright = 1.0f;	
-		led_bright = 1.0f - led_bright;	
-		
+		float led_bright = fabsf( (float) i - kr_position);
+		if ( led_bright > 1.0f) led_bright = 1.0f;
+		led_bright = 1.0f - led_bright;
+
 		// set a green background as well, 32 brightness
 		rgb_led_set_one( i , RGB( (led_bright*255.0f) , (32.0f-led_bright*32.0f) , 0) );
 
 	}
-		
+
 }
 
 
@@ -159,7 +159,7 @@ rgb_loopcount++;
 if ( rgb_loopcount > DOWNSAMPLE )
 {
 	rgb_loopcount = 0;
-// led flash logic	
+// led flash logic
 if ( lowbatt )
 {
 	//rgb_led_set_all( RGB( 255 , 0 , 0 ) );
@@ -177,15 +177,15 @@ else
 		}
 		else
 		{// non bind
-			if ( failsafe) 
+			if ( failsafe)
 				{
 					// failsafe flash
-					rgb_ledflash ( RGB( 0 , 128 , 0 ) , RGB( 0 , 0 , 128 ) ,500000, 8);	
-					//rgb_led_set_all( RGB( 0 , 128 , 128 ) );					
+					rgb_ledflash ( RGB( 0 , 128 , 0 ) , RGB( 0 , 0 , 128 ) ,500000, 8);
+					//rgb_led_set_all( RGB( 0 , 128 , 128 ) );
 				}
-			else 
+			else
 			{
-/*			
+/*
 				#ifdef GESTURES2_ENABLE
 				// flashing for gestures
 				if (ledcommand)
@@ -200,17 +200,17 @@ else
 							  ledflash(100000, 8);
 						  }
 						else
-				
+
 					#endif // end gesture led flash
 */
 				if ( aux[LEDS_ON] )
-			
+
 				rgb_led_set_all( RGB_VALUE_INFLIGHT_ON );
-				else 			
+				else
 				rgb_led_set_all( RGB_VALUE_INFLIGHT_OFF );
 			}
-		} 		
-		
+		}
+
 	}
 
 // send data to leds
@@ -219,7 +219,7 @@ for (int i = 0 ; i < RGB_LED_NUMBER ; i++)
 		rgb_send( rgb_led_value[i] );
 	}
 
-}	
+}
 }
 
 #endif

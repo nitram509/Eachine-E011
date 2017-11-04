@@ -27,7 +27,7 @@ THE SOFTWARE.
 // original bluetooth LE idea by Dmitry Grinberg
 // http://dmitry.gr/index.php?r=05.Projects&proj=11.%20Bluetooth%20LE%20fakery
 
-// some bluetooth LE functions adapted from nrf24 code by Lijun 
+// some bluetooth LE functions adapted from nrf24 code by Lijun
 // http://doc.lijun.li/misc-nrf24-ble.html
 // https://github.com/lijunhw/nRF24_BLE/blob/master/Arduino/nRF24_BLE_advertizer_demo/nRF24_BLE_advertizer_demo.ino
 
@@ -73,7 +73,7 @@ THE SOFTWARE.
 // for their quad and don't have it powered on in the same time with yours inisde bluetooth range), otherwise TLM data WILL BE MIXED BETWEEN QUADS!
 // If this option is not enabled and set, different random number will be assigned to quad's MAC after EACH power-up - BUT THEN BE AWARE THAT ON SOME ANDROID DEVICES (NEXUS 5, 6 etc.)
 // THERE IS A BUG THAT, ACCORDING TO SOME INFORMATION AROUND INTERNET, MIGHT CAUSE BLUETOOTH TO STOP WORKING IF TOO MUCH DIFFERENT BLE DEVICES ARE SCANNED!
-// CHECK HERE: 
+// CHECK HERE:
 //    https://code.google.com/p/android/issues/detail?id=191831
 //    http://www.androidpolice.com/2014/05/20/bug-watch-bluetooth-will-begin-crashing-after-encountering-too-many-ble-devices-affects-kitkat-4-4-and-jelly-bean-4-3/
 //    https://play.google.com/store/apps/details?id=com.radiusnetworks.bluetoothcrashresolver
@@ -184,7 +184,7 @@ unsigned int total_time_in_air = 0;
 unsigned int time_throttle_on = 0;
 int bound_for_BLE_packet;
 extern int random_seed;
-	
+
 void bleinit( void);
 
 void writeregs ( uint8_t data[] , uint8_t size )
@@ -203,7 +203,7 @@ delay(1000);
 void rx_init()
 {
 
-	
+
 // always on (CH_ON) channel set 1
 aux[AUXNUMBER - 2] = 1;
 // always off (CH_OFF) channel set 0
@@ -217,17 +217,17 @@ aux[CH_AUX1] = 1;
     aux[CH_AUX4] = 1;
 #endif
 
-	
+
 #ifdef RADIO_XN297L
-	
+
 #define XN_TO_RX B10001111
 #define XN_TO_TX B10000010
 #define XN_POWER B00111111
-	
+
 #endif
 
 
-	
+
 #ifdef RADIO_XN297
 static uint8_t bbcal[6] = { 0x3f , 0x4c , 0x84 , 0x6F , 0x9c , 0x20  };
 writeregs( bbcal , sizeof(bbcal) );
@@ -290,11 +290,11 @@ spi_csoff();
 
 
 #ifdef RADIO_CHECK
-int	rxcheck = xn_readreg( 0x0f); // rx address pipe 5	
+int	rxcheck = xn_readreg( 0x0f); // rx address pipe 5
 	// should be 0xc6
 	extern void failloop( int);
 	if ( rxcheck != 0xc6) failloop(3);
-#endif	
+#endif
 }
 
 
@@ -310,14 +310,14 @@ union
 
 myint.int32 = 0x00aaaaaa;
 
-while (len--) 
+while (len--)
 	{
 	uint8_t d = *(buf++);
-	for ( int i=8 ; i>0 ; i--) 
+	for ( int i=8 ; i>0 ; i--)
 		{
-		uint8_t t = myint.int32&1;			
+		uint8_t t = myint.int32&1;
 		myint.int32>>=1;
-		if (t != (d & 1)) 
+		if (t != (d & 1))
 			{
 			myint.u8[2] ^= 0xDA;
 			myint.u8[1] ^= 0x60;
@@ -343,17 +343,17 @@ const uint8_t xn297_scramble[] = {
     0x8e, 0xc5, 0x2f};
 
 // bit reversed of above
-const uint8_t xn297_scramble_rev[] = { 
+const uint8_t xn297_scramble_rev[] = {
 		0xc7 , 0x8d , 0xd2 , 0x57 , 0xa1 , 0x3d , 0xa7 , 0x66 ,
-		0xb0 , 0x75 , 0x31 , 0x11 , 0x48 , 0x96 , 0x77 , 0xf8 , 
-		0xe3 , 0x46 , 0xe9 , 0xab , 0xd0 , 0x9e , 0x53 , 0x33 , 
-		0xd8 , 0xba , 0x98 , 0x8 , 0x24 , 0xcb , 0x3b , 0xfc , 
+		0xb0 , 0x75 , 0x31 , 0x11 , 0x48 , 0x96 , 0x77 , 0xf8 ,
+		0xe3 , 0x46 , 0xe9 , 0xab , 0xd0 , 0x9e , 0x53 , 0x33 ,
+		0xd8 , 0xba , 0x98 , 0x8 , 0x24 , 0xcb , 0x3b , 0xfc ,
 		0x71 , 0xa3 , 0xf4 , 85  , 104  , 207  , 169  , 25   ,
 		108  ,  93  , 76   , 4   , 146  , 229  , 29  };
 
 		// whitening sequence for adv channel 37 (rf chan 2402)
 		// for speed
-const uint8_t ble_whiten_37[] = { 
+const uint8_t ble_whiten_37[] = {
 	0x8D , 0xd2 , 0x57 , 0xa1 , 0x3d , 0xa7 , 0x66 , 0xb0 ,
 	0x75 , 0x31 , 0x11 , 0x48 , 0x96 , 0x77 , 0xf8 , 0xe3 ,
 	0x46 , 0xe9 , 0xab , 0xd0 , 0x9e , 0x53 , 0x33 , 0xd8 ,
@@ -393,7 +393,7 @@ return b;
 // cortex m3 intrinsic bitswap
 uint8_t swapbits_m3(uint8_t a)
 {
-return (unsigned int) __rbit( (unsigned int) a); 
+return (unsigned int) __rbit( (unsigned int) a);
 }
 */
 
@@ -439,13 +439,13 @@ btLeCrc(packet, dataLen, packet + dataLen);
 //	packet[dataLen] = swapbits(packet[dataLen]);
 
 if (ONE_CHANNEL)
-{	
+{
 // faster array based whitening
-for(i = 0; i < len; i++) 
+for(i = 0; i < len; i++)
 	packet[i] ^=ble_whiten_37[i];
 }
 else // lfsr based
-btLeWhiten(packet, len, whitenstart[chan]);	
+btLeWhiten(packet, len, whitenstart[chan]);
 }
 
 #define RXDEBUG
@@ -485,10 +485,10 @@ void bleinit()
 {
 // Set access addresses (TX address in nRF24L01) to BLE advertising 0x8E89BED6
 // Remember that both bit and byte orders are reversed for BLE packet format
-	
+
 int txaddr[5];
 
-/*	
+/*
 	// 4 byte address
 txaddr[0] = swapbits(0x8E)^xn297_scramble[3];
 txaddr[1] = swapbits(0x89)^xn297_scramble[2];
@@ -497,7 +497,7 @@ txaddr[3] = swapbits(0xD6)^xn297_scramble[0];
 txaddr[4] = 0;
 */
 
-/*	
+/*
 		// 4 byte address - optimized
 txaddr[0] = 0x71^0xea;
 txaddr[1] = 0x91^0x4b;
@@ -514,8 +514,8 @@ txaddr[2] = 0x7d^0x4b;
 txaddr[3] = 0x6b^0xb1;
 txaddr[4] = 0xaa^0xe3;	// preamble
 
-	
-xn_writetxaddress( txaddr );	
+
+xn_writetxaddress( txaddr );
 
 
 
@@ -541,7 +541,7 @@ int oldchan = 0;
 void beacon_sequence()
 {
 static int beacon_seq_state = 0;
-	
+
  switch ( beacon_seq_state )
  {
 	 case 0:
@@ -550,24 +550,24 @@ static int beacon_seq_state = 0;
 		 {
 		 ble_send = 1;
 		 oldchan = rf_chan;
-			 
+
 			 //SilverVISE - start
 			 #ifdef TX_POWER_ON_TLM
 					xn_writereg( RF_SETUP , TX_POWER_ON_TLM);  // lna low current ( better BLE)
 			 #endif
 			 //SilverVISE - end
-			 
+
 		 send_beacon();
-		 
+
 	   beacon_seq_state++;
 		 }
 	 break;
-	 
+
 	 case 1:
 		 // wait for data to finish transmitting
-			if( (xn_readreg(0x17)&B00010000)  ) 
+			if( (xn_readreg(0x17)&B00010000)  )
 			{
-				xn_writereg( 0 , XN_TO_RX ); 
+				xn_writereg( 0 , XN_TO_RX );
 				xn_writereg(0x25, rfchannel[oldchan]);
 			 beacon_seq_state++;
 			 goto next;
@@ -581,41 +581,41 @@ static int beacon_seq_state = 0;
 						xn_writereg( RF_SETUP , XN_POWER);  // lna high current on ( better performance )
 					#endif
 					//SilverVISE - end
-					
+
 					xn_command( FLUSH_TX);
-					xn_writereg( 0 , XN_TO_RX ); 
+					xn_writereg( 0 , XN_TO_RX );
 				 beacon_seq_state++;
 				 ble_send = 0;
 				}
 			}
 	 break;
-	 
-		
+
+
 	 case 2:
 		 next:
 		 // restore radio settings to protocol compatible
 	   // mainly channel here
-		 
-		 //SilverVISE - start	
+
+		 //SilverVISE - start
 		 #ifdef TX_POWER_ON_TLM
 		  	xn_writereg( RF_SETUP , XN_POWER);  // lna high current on ( better performance )
 		 #endif
 	   //SilverVISE - end
-	 
-		 ble_send = 0;	
+
+		 ble_send = 0;
 		if ( rxmode == 0 )
 		{
 			xn_writereg(0x25, 0 ); // Set channel frequency	, bind
 		}
 		 beacon_seq_state++;
 	 break;
-	 
+
 	 default:
-		 beacon_seq_state = 0;		 
+		 beacon_seq_state = 0;
 	 break;
-	
- 
-	 
+
+
+
  }
 
 }
@@ -624,10 +624,10 @@ int interleave = 0;
 
 void send_beacon()
 {
-	
+
 // Channel hopping
 ch++;
-if (ch>2 ) 
+if (ch>2 )
 {
   ch = 0;
 }
@@ -663,7 +663,7 @@ time = time * 10;
 
 
 //int acro_or_level_mode;
-	
+
 //if ( aux[LEVELMODE] ) acro_or_level_mode = 1;
 //else acro_or_level_mode = 0;
 
@@ -678,7 +678,7 @@ int TLMorPID = 0; // 0 = TLM, 1 = PID+TLM
 TLMorPID = 1; // 0 = TLM, 1 = PID+TLM
 #endif
 
-	
+
 if (onground ==1)
 {
 	time_throttle_on = uptime;
@@ -763,23 +763,23 @@ buf[L++]=(char)'M';
 buf[L++]=(char)'E';
 #endif
 
-	
+
 extern int current_pid_term; //0 = pidkp, 1 = pidki, 2 = pidkd
 extern int current_pid_axis; //0 = roll, 1 = pitch, 2 = yaw
 
 //int selectedPID = 0; //inxed of selected PID for changing
-	
+
 int selectedPID = ((current_pid_term)*3)+(current_pid_axis);
-	
+
 buf[L++] =  (current_PID_for_display<<4)+selectedPID; // xy => x=current PID for display 0 - 14 (cycling...), y = selected PID for changing 0 - 14
-	
+
 buf[L++] = packetpersecond_short;
-	
+
 /*
 buf[L++] =  onground_and_bind; //binary xxxxabcd - xxxx = error code or warning, a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 */
 
-	
+
 #ifdef COMBINE_PITCH_ROLL_PID_TUNING
 	buf[L++] =  B01000000+((rate_and_mode_value<<4)+onground_and_bind); //binary xxRMabcd - x = error code or warning, 1 = combined roll+pitch tuning, R = rate (0 - normal, 1 - fast) , M = mode (1 - level, 0 - acro); a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 	int PID_pause = 8;
@@ -787,7 +787,7 @@ buf[L++] =  onground_and_bind; //binary xxxxabcd - xxxx = error code or warning,
 	buf[L++] =  (rate_and_mode_value<<4)+onground_and_bind; //binary x0RMabcd - x = error code or warning, 0 = no combined roll+pitch tuning, R = rate (0 - normal, 1 - fast) , M = mode (1 - level, 0 - acro); a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 	int PID_pause = 12;
 #endif
-	
+
 buf[L++] =  vbatt_comp_int>>8;  // Battery voltage compensated
 buf[L++] =  vbatt_comp_int;  // Battery voltage compensated
 
@@ -798,7 +798,7 @@ extern float pidkd[]; // current_PID_for_display = 6, 7, 8
 extern float apidkp[]; // current_PID_for_display = 9, 10
 extern float apidki[]; //  current_PID_for_display = 11, 12
 extern float apidkd[]; //  current_PID_for_display = 13, 14
-	
+
 unsigned long pid_for_display = 0;
 
 switch ( current_PID_for_display )
@@ -827,16 +827,16 @@ switch ( current_PID_for_display )
 buf[L++] =  total_time_in_air_time;  // total time in air
 buf[L++] =  time>>8;
 buf[L++] =  time;
-*/	
+*/
 
 buf[L++] =  total_time_in_air_time>>8;  // total time in air
-buf[L++] =  total_time_in_air_time;  // total time in air	 
+buf[L++] =  total_time_in_air_time;  // total time in air
 buf[L++] =  time>>8;
 buf[L++] =  time;
 
 buf[L++] =  pid_for_display>>8;
 buf[L++] =  pid_for_display;
-	 
+
 L=L+3; //crc
 
 PID_index_delay++;
@@ -845,13 +845,13 @@ int PID_index_limit = 8; // number of PIDs to display for acro mode tuning
 if (PID_index_delay > PID_pause) {
 	PID_index_delay = 0;
 	current_PID_for_display++;
-	
+
 #ifdef COMBINE_PITCH_ROLL_PID_TUNING
  if (current_PID_for_display == 1)	current_PID_for_display =2;
  if (current_PID_for_display == 4)	current_PID_for_display =5;
  if (current_PID_for_display == 7)	current_PID_for_display =8;
 #endif
-	
+
 	if (current_PID_for_display > PID_index_limit) current_PID_for_display = 0;
 }
 
@@ -911,11 +911,11 @@ L=L+3; //crc
 btLePacketEncode(buf, L, ch );
 
 // undo xn297 data whitening
-for (uint8_t i = 0; i < L; ++i) 
+for (uint8_t i = 0; i < L; ++i)
 {
 buf[i] = buf[i] ^ xn297_scramble_rev[i+ 5] ; // address size 5
 }
- 
+
 
 for( int i = 0 ; i < L ; i++) buffint[i] = buf[i];
 
@@ -929,7 +929,7 @@ xn_writepayload( buffint , L );
 
 ble_txtime = gettime();
 
-return;	
+return;
 }
 
 
@@ -947,10 +947,10 @@ static char checkpacket()
 	}
 	if( (status & B00001110) != B00001110 )
 	{
-		// rx fifo not empty		
-		return 2;	
+		// rx fifo not empty
+		return 2;
 	}
-	
+
   return 0;
 }
 
@@ -960,7 +960,7 @@ int rxdata[15];
 
 float packettodata( int *  data)
 {
-	return ( ( ( data[0]&0x0003) * 256 + data[1] ) - 512 ) * 0.001953125 ;	
+	return ( ( ( data[0]&0x0003) * 256 + data[1] ) - 512 ) * 0.001953125 ;
 }
 
 
@@ -969,22 +969,22 @@ static int decodepacket( void)
 	if ( rxdata[0] == 165 )
 	{
 		 int sum = 0;
-		 for(int i=0; i<14; i++) 
+		 for(int i=0; i<14; i++)
 		 {
 			sum += rxdata[i];
-		 }	
+		 }
 		if ( (sum&0xFF) == rxdata[14] )
 		{
 			rx[0] = packettodata( &rxdata[4] );
 			rx[1] = packettodata( &rxdata[6] );
 			rx[2] = packettodata( &rxdata[10] );
-		// throttle		
+		// throttle
 			rx[3] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562f;
-		
+
 #ifndef DISABLE_EXPO
 	rx[0] = rcexpo ( rx[0] , EXPO_XY );
-	rx[1] = rcexpo ( rx[1] , EXPO_XY ); 
-	rx[2] = rcexpo ( rx[2] , EXPO_YAW ); 	
+	rx[1] = rcexpo ( rx[1] , EXPO_XY );
+	rx[2] = rcexpo ( rx[2] , EXPO_YAW );
 #endif
 
 
@@ -1010,15 +1010,15 @@ char trims[4];
 					      aux[CH_PIT_TRIM + i] = trims[i] > lasttrim[i];
 					      lasttrim[i] = trims[i];
 				      }
-#else			
-// this share the same numbers to the above CH_PIT_TRIM etc		 					
+#else
+// this share the same numbers to the above CH_PIT_TRIM etc
 					aux[CH_VID] = (rxdata[2] & 0x10) ? 1 : 0;
-												
-					aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;						
+
+					aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;
 #endif
-							
+
 				aux[CH_INV] = (rxdata[3] & 0x80)?1:0; // inverted flag
-							
+
 			    aux[CH_FLIP] = (rxdata[2] & 0x08) ? 1 : 0;
 
 			    aux[CH_EXPERT] = (rxdata[1] == 0xfa) ? 1 : 0;
@@ -1035,8 +1035,8 @@ char trims[4];
 				if ( lastaux[i] != aux[i] ) auxchange[i] = 1;
 				lastaux[i] = aux[i];
 			}
-			
-			return 1;	// valid packet	
+
+			return 1;	// valid packet
 		}
 	 return 0; // sum fail
 	}
@@ -1083,16 +1083,16 @@ void checkrx(void)
 				      rfchannel[1] = rxdata[7];
 				      rfchannel[2] = rxdata[8];
 				      rfchannel[3] = rxdata[9];
-							
+
 							int rxaddress[5];
 				      rxaddress[0] = rxdata[1];
 				      rxaddress[1] = rxdata[2];
 				      rxaddress[2] = rxdata[3];
 				      rxaddress[3] = rxdata[4];
 				      rxaddress[4] = rxdata[5];
-				      
+
 				      xn_writerxaddress(rxaddress);
-				      xn_writereg(0x25, rfchannel[rf_chan]);	// Set channel frequency 
+				      xn_writereg(0x25, rfchannel[rf_chan]);	// Set channel frequency
 							rxmode = RX_MODE_NORMAL;
 							bound_for_BLE_packet=1; //SilverVISE
 
@@ -1102,18 +1102,18 @@ void checkrx(void)
 			      }
 		    }
 		  else
-		    {		// normal mode  
+		    {		// normal mode
 #ifdef RXDEBUG
 			    channelcount[rf_chan]++;
 			    packettime = gettime() - lastrxtime;
-					
+
 					if ( skipchannel&& !timingfail ) afterskip[skipchannel]++;
 					if ( timingfail ) afterskip[0]++;
 
 #endif
 
 unsigned long temptime = gettime();
-	
+
 			    nextchannel();
 
 			    xn_readpayload(rxdata, 15);
@@ -1143,15 +1143,15 @@ unsigned long temptime = gettime();
 	  }			// end packet received
 
 	beacon_sequence();
-	
+
 	unsigned long time = gettime();
 
-		
+
 
 	// sequence period 12000
 	if (time - lastrxtime > (HOPPING_NUMBER*PACKET_PERIOD + 1000) && rxmode != RX_MODE_BIND)
-	  {			
-			//  channel with no reception   
+	  {
+			//  channel with no reception
 		  lastrxtime = time;
 			// set channel to last with reception
 			if (!timingfail) rf_chan = lastrxchan;
@@ -1160,21 +1160,21 @@ unsigned long temptime = gettime();
 			// set flag to discard packet timing
 			timingfail = 1;
 	  }
-		
+
 	if ( !timingfail && !ble_send && skipchannel < HOPPING_NUMBER+1 && rxmode != RX_MODE_BIND)
 		{
 			unsigned int temp = time - lastrxtime ;
 
-			if ( temp > 1000 && ( temp - (PACKET_OFFSET) )/((int) PACKET_PERIOD) >= (skipchannel + 1) ) 
+			if ( temp > 1000 && ( temp - (PACKET_OFFSET) )/((int) PACKET_PERIOD) >= (skipchannel + 1) )
 			{
 				nextchannel();
-#ifdef RXDEBUG				
+#ifdef RXDEBUG
 				skipstats[skipchannel]++;
-#endif				
+#endif
 				skipchannel++;
 			}
-		}	
-	
+		}
+
 	if (time - failsafetime > FAILSAFETIME)
 	  {	//  failsafe
 		  failsafe = 1;

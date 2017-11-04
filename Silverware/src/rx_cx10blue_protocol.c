@@ -68,7 +68,7 @@ delay(1000);
  uint8_t demodcal[6] = { 0x39 , 0x0b , 0xdf , 0xc4 , 0xa7 , 0x03};
 
 void rx_init()
-{	
+{
 /*
 writeregs( bbcal , sizeof(bbcal) );
 writeregs( rfcal , sizeof(rfcal) );
@@ -78,7 +78,7 @@ int rxaddress[5] =  {0xCC,0xCC,0xCC,0xCC,0xCC};
 
 xn_writerxaddress( rxaddress);
 
-xn_writetxaddress( rxaddress);	
+xn_writetxaddress( rxaddress);
 
 	xn_writereg( EN_AA , 0 );	// aa disabled
 	xn_writereg( EN_RXADDR , 1 ); // pipe 0 only
@@ -88,18 +88,18 @@ xn_writetxaddress( rxaddress);
 	xn_writereg( SETUP_RETR , 0 ); // no retransmissions ( redundant?)
 	xn_writereg( SETUP_AW , 3 ); // address size (5 bits)
 	xn_command( FLUSH_RX);
-  xn_writereg( RF_CH , 2 );  // bind  channel 
+  xn_writereg( RF_CH , 2 );  // bind  channel
   xn_writereg( 0 , B00001111 ); // power up, crc enabled
 
 
-	
+
 }
 
 
 static char checkpacket()
 {
 int status = xn_readreg( 7 );
-  
+
 	if ( status&(1<<MASK_RX_DR) )
 	{	 // rx clear bit
 		// this is not working well
@@ -109,10 +109,10 @@ int status = xn_readreg( 7 );
 	}
 	if( (status & B00001110) != B00001110 )
 	{
-		// rx fifo not empty		
-		return 2;	
+		// rx fifo not empty
+		return 2;
 	}
-	
+
   return 0;
 }
 
@@ -133,27 +133,27 @@ static int decodepacket( void)
 		rx[1] = -cx10scale(11) ; // elev
 		rx[3] = (cx10scale(13) + 1.0f)*0.5f ; // throttle
 		rx[2] = cx10scale(15) ; // throttle
-				
+
 		#ifndef DISABLE_EXPO
 			rx[0] = rcexpo ( rx[0] , EXPO_XY );
-			rx[1] = rcexpo ( rx[1] , EXPO_XY ); 
-			rx[2] = rcexpo ( rx[2] , EXPO_YAW ); 	
+			rx[1] = rcexpo ( rx[1] , EXPO_XY );
+			rx[2] = rcexpo ( rx[2] , EXPO_YAW );
 		#endif
 
     aux[0] = (rxdata[16] & 0x10)?1:0;
-			
+
 	  aux[2] = (rxdata[17] & 0x01)?1:0; // rates mid
-		
+
 		for ( int i = 0 ; i < AUXNUMBER - 2 ; i++)
 		{
 			auxchange[i] = 0;
 			if ( lastaux[i] != aux[i] ) auxchange[i] = 1;
 			lastaux[i] = aux[i];
 		}
-		
-		return 1;	// valid packet	
+
+		return 1;	// valid packet
 		}
-	 return 0; // 
+	 return 0; //
 }
 
 
@@ -175,14 +175,14 @@ void nextchannel()
 
 
 
-#ifdef RXDEBUG	
+#ifdef RXDEBUG
 struct rxdebug
 	{
 	unsigned long packettime;
 	int failcount;
 	int packetpersecond;
 	int channelcount[4];
-	} 
+	}
 	rxdebug;
 int packetrx;
 unsigned long lastrxtime;
@@ -196,36 +196,36 @@ void checkrx( void)
 {
 	int packetreceived =	checkpacket();
 	int pass = 0;
-		if ( packetreceived ) 
-		{ 
+		if ( packetreceived )
+		{
 			if ( rxmode == 0)
 			{	// rx startup , bind mode
 				xn_readpayload( rxdata , 15);
-		
-				if ( rxdata[0] == 0xAA ) 
+
+				if ( rxdata[0] == 0xAA )
 				{// bind packet
-					
-				  unsigned int temp = rxdata[2];//&0x2F;	
-					
+
+				  unsigned int temp = rxdata[2];//&0x2F;
+
 					rfchannel[0] = ( (uint8_t) rxdata[1] & 0x0F) + 0x03;
 					rfchannel[1] = ( (uint8_t) rxdata[1] >> 4) + 0x16;
 					rfchannel[2] = ( (uint8_t) temp & 0x0F) + 0x2D;
 					rfchannel[3] = ( (uint8_t) temp >> 4);
-					
+
 					rxdata[9] = 1;
 					for ( int i = 200; i!=0; i--)
 					{
-						// sent confirmation to tx  
-																
-					xn_writereg( 0 , B00001110 ); 
+						// sent confirmation to tx
+
+					xn_writereg( 0 , B00001110 );
 					delay(130);
-					
+
 					xn_writepayload(  rxdata , PAYLOAD_LENGHT );
-					/*					
+					/*
 					int status;
 					status = 0;
 					int txcount = 0;
-					while( !(status&B00100000) && txcount < 0x100 ) 
+					while( !(status&B00100000) && txcount < 0x100 )
 					{
 						status = xn_command(NOP);
 						delay(10);
@@ -233,61 +233,61 @@ void checkrx( void)
 					}
 					*/
 					delay(1000);
-					xn_writereg( 0 , B00001111 ); 
+					xn_writereg( 0 , B00001111 );
 					//xn_writereg( STATUS , B00100000 );
 					delay(1000);
 					}
-					rxmode = RXMODE_NORMAL;				
-					
+					rxmode = RXMODE_NORMAL;
+
 					nextchannel();
 				  extern unsigned long lastlooptime;
 					lastlooptime = gettime();
-					#ifdef SERIAL	
+					#ifdef SERIAL
 					printf( " BIND \n");
 					#endif
 				}
 			}
 			else
-			{	// normal rx mode	
-				#ifdef RXDEBUG	
+			{	// normal rx mode
+				#ifdef RXDEBUG
 				rxdebug.packettime = gettime() - lastrxtime;
 				#endif
-		
-				
-				lastrxtime = gettime();				
+
+
+				lastrxtime = gettime();
 				xn_readpayload( rxdata , PAYLOAD_LENGHT);
 				pass = decodepacket();
-				 
+
 				if (pass)
-				{ 
-					
-					#ifdef RXDEBUG	
+				{
+
+					#ifdef RXDEBUG
 					packetrx++;
-					rxdebug.channelcount[chan]++;	
+					rxdebug.channelcount[chan]++;
 					#endif
-					failsafetime = lastrxtime; 
-					failsafe = 0;			
+					failsafetime = lastrxtime;
+					failsafe = 0;
 					nextchannel();
-				
-				}	
+
+				}
 				else
 				{
-				#ifdef RXDEBUG	
+				#ifdef RXDEBUG
 				rxdebug.failcount++;
-				#endif	
+				#endif
 				}
-			
+
 			}// end normal rx mode
-				
+
 		}// end packet received
 
 		unsigned long time = gettime();
-		
+
 		if( time - lastrxtime > 20000 && rxmode != RXMODE_BIND)
-		{//  channel with no reception	 
+		{//  channel with no reception
 		 lastrxtime = time;
 		 nextchannel();
-		
+
 		}
 		if( time - failsafetime > FAILSAFETIME )
 		{//  failsafe
@@ -297,7 +297,7 @@ void checkrx( void)
 			rx[2] = 0;
 			rx[3] = 0;
 		}
-#ifdef RXDEBUG	
+#ifdef RXDEBUG
 			if ( gettime() - secondtimer  > 1000000)
 			{
 				rxdebug.packetpersecond = packetrx;
@@ -309,7 +309,7 @@ void checkrx( void)
 }
 
 // end bayang protocol
-#endif 
+#endif
 
 
 

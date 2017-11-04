@@ -11,19 +11,19 @@ void rgb_send( int data);
 #if ( RGB_LED_NUMBER > 0)
 
 void rgb_init(void)
-{    
+{
 	// spi port inits
 
-	if ( (RGB_PIN == GPIO_Pin_13 || RGB_PIN == GPIO_Pin_14) && RGB_PORT == GPIOA ) 
+	if ( (RGB_PIN == GPIO_Pin_13 || RGB_PIN == GPIO_Pin_14) && RGB_PORT == GPIOA )
 	{
 		// programming port used
-		
+
 		// wait until 2 seconds from powerup passed
 		while ( gettime() < 2e6 ) ;
 	}
-	
+
 		GPIO_InitTypeDef  GPIO_InitStructure;
-	
+
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
@@ -37,7 +37,7 @@ void rgb_init(void)
 	{
 		rgb_send( 0 );
 	}
-	
+
 }
 
 
@@ -56,25 +56,25 @@ void rgb_init(void)
 
 void delay1a()
 {
-	uint8_t count = 2; 
+	uint8_t count = 2;
 	while (count--);
 }
 
 void delay1b()
 {
-	uint8_t count = 2; 
+	uint8_t count = 2;
 	while (count--);
 }
 
 void delay2a()
 {
-	uint8_t count = 1; 
+	uint8_t count = 1;
 	while (count--);
 }
 
 void delay2b()
 {
-	uint8_t count = 3; 
+	uint8_t count = 3;
 	while (count--);
 }
 
@@ -82,14 +82,14 @@ void rgb_send( int data)
 {
 for ( int i =23 ; i >=0 ; i--)
 	{
-		if (  (data>>i)&1  ) 
+		if (  (data>>i)&1  )
 		{
 			RGBHIGH;
 			delay1a();
 			RGBLOW;
 			delay1b();
 		}
-		else 
+		else
 		{
 			RGBHIGH;
 			delay2a();
@@ -110,22 +110,11 @@ for ( int i =23 ; i >=0 ; i--)
 // some dummy headers just in case
 void rgb_init(void)
 {
-	
+
 }
 
 void rgb_send( int data)
 {
-	
+
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-

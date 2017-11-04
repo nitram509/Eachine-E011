@@ -61,7 +61,7 @@ delay(1000);
 void rx_init()
 {
 
-	
+
 /*
 uint8_t bbcal[6] = { 0x3f , 0x4c , 0x84 , 0x6F , 0x9c , 0x20  };
 writeregs( bbcal , sizeof(bbcal) );
@@ -94,7 +94,7 @@ spi_csoff();
 	xn_command( FLUSH_RX);
   xn_writereg( RF_CH , 0 );  // bind on channel 0
   xn_writereg( 0 , B10001111 ); // power up, crc enabled
-	
+
 }
 
 
@@ -111,10 +111,10 @@ static char checkpacket()
 	}
 	if( (status & B00001110) != B00001110 )
 	{
-		// rx fifo not empty		
-		return 2;	
+		// rx fifo not empty
+		return 2;
 	}
-	
+
   return 0;
 }
 
@@ -125,7 +125,7 @@ int rxdata[15];
 
 float packettodata( int *  data)
 {
-	return ( ( ( data[0]&0x0003) * 256 + data[1] ) - CHANOFFSET ) * 0.001953125 ;	
+	return ( ( ( data[0]&0x0003) * 256 + data[1] ) - CHANOFFSET ) * 0.001953125 ;
 }
 
 
@@ -134,31 +134,31 @@ static int decodepacket( void)
 	if ( rxdata[0] == 165 )
 	{
 		 int sum = 0;
-		 for(int i=0; i<14; i++) 
+		 for(int i=0; i<14; i++)
 		 {
 			sum += rxdata[i];
-		 }	
+		 }
 		if ( (sum&0xFF) == rxdata[14] )
 		{
 			rx[0] = packettodata( &rxdata[4] );
 			rx[1] = packettodata( &rxdata[6] );
 			rx[2] = packettodata( &rxdata[10] );
-		// throttle		
+		// throttle
 			rx[3] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
-		
+
 #ifndef DISABLE_EXPO
 	rx[0] = rcexpo ( rx[0] , EXPO_XY );
-	rx[1] = rcexpo ( rx[1] , EXPO_XY ); 
-	rx[2] = rcexpo ( rx[2] , EXPO_YAW ); 	
+	rx[1] = rcexpo ( rx[1] , EXPO_XY );
+	rx[2] = rcexpo ( rx[2] , EXPO_YAW );
 #endif
 
-		// trims are 50% of controls at max		
+		// trims are 50% of controls at max
 	// trims are not used because they interfere with dynamic trims feature of devo firmware
-			
+
 //			rx[0] = rx[0] + 0.03225 * 0.5 * (float)(((rxdata[4])>>2) - 31);
 //			rx[1] = rx[1] + 0.03225 * 0.5 * (float)(((rxdata[6])>>2) - 31);
 //			rx[2] = rx[2] + 0.03225 * 0.5 * (float)(((rxdata[10])>>2) - 31);
-	
+
 #ifdef USE_STOCK_TX
 char trims[2];
 static char lasttrim[2];
@@ -175,12 +175,12 @@ static char lasttrim[2];
 				      }
 #else
 					aux[CH_INV] = (rxdata[3] & 0x80)? 1 : 0; // inverted flag
-						
+
 					aux[CH_VID] = (rxdata[2] & 0x10) ? 1 : 0;
-												
-					aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;						
+
+					aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;
 #endif
-							
+
 			    aux[CH_FLIP] = (rxdata[2] & 0x08) ? 1 : 0;
 
 			    aux[CH_EXPERT] = (rxdata[1] == 0xfa) ? 1 : 0;
@@ -196,8 +196,8 @@ static char lasttrim[2];
 				if ( lastaux[i] != aux[i] ) auxchange[i] = 1;
 				lastaux[i] = aux[i];
 			}
-			
-			return 1;	// valid packet	
+
+			return 1;	// valid packet
 		}
 	 return 0; // sum fail
 	}
@@ -276,16 +276,16 @@ void checkrx(void)
 				      rfchannel[1] = rxdata[7];
 				      rfchannel[2] = rxdata[8];
 				      rfchannel[3] = rxdata[9];
-							
+
 							int rxaddress[5];
 				      rxaddress[0] = rxdata[1];
 				      rxaddress[1] = rxdata[2];
 				      rxaddress[2] = rxdata[3];
 				      rxaddress[3] = rxdata[4];
 				      rxaddress[4] = rxdata[5];
-				      
+
 				      xn_writerxaddress(rxaddress);
-				      xn_writereg(0x25, rfchannel[chan]);	// Set channel frequency 
+				      xn_writereg(0x25, rfchannel[chan]);	// Set channel frequency
 							rxmode = RXMODE_NORMAL;
 
 #ifdef SERIAL
@@ -294,18 +294,18 @@ void checkrx(void)
 			      }
 		    }
 		  else
-		    {		// normal mode  
+		    {		// normal mode
 #ifdef RXDEBUG
 			    channelcount[chan]++;
 			    packettime = gettime() - lastrxtime;
-					
+
 					if ( skipchannel&& !timingfail ) afterskip[skipchannel]++;
 					if ( timingfail ) afterskip[0]++;
 
 #endif
 
 unsigned long temptime = gettime();
-	
+
 			    nextchannel();
 
 			    xn_readpayload(rxdata, 15);
@@ -334,15 +334,15 @@ unsigned long temptime = gettime();
 
 	  }			// end packet received
 
-		
+
 	unsigned long time = gettime();
 
-		
+
 
 	// sequence period 12000
 	if (time - lastrxtime > (HOPPING_NUMBER*PACKET_PERIOD + 1000) && rxmode != RXMODE_BIND)
-	  {			
-			//  channel with no reception   
+	  {
+			//  channel with no reception
 		  lastrxtime = time;
 			// set channel to last with reception
 			if (!timingfail) chan = lastrxchan;
@@ -351,21 +351,21 @@ unsigned long temptime = gettime();
 			// set flag to discard packet timing
 			timingfail = 1;
 	  }
-		
+
 	if ( !timingfail && skipchannel < HOPPING_NUMBER+1 && rxmode != RXMODE_BIND)
 		{
 			unsigned int temp = time - lastrxtime ;
 
-			if ( temp > 1000 && ( temp + (PACKET_OFFSET) )/((int) PACKET_PERIOD) >= (skipchannel + 1) ) 
+			if ( temp > 1000 && ( temp + (PACKET_OFFSET) )/((int) PACKET_PERIOD) >= (skipchannel + 1) )
 			{
 				nextchannel();
-#ifdef RXDEBUG				
+#ifdef RXDEBUG
 				skipstats[skipchannel]++;
-#endif				
+#endif
 				skipchannel++;
 			}
-		}	
-	
+		}
+
 	if (time - failsafetime > FAILSAFETIME)
 	  {	//  failsafe
 		  failsafe = 1;

@@ -42,7 +42,7 @@ THE SOFTWARE.
 // the xn297 is not directly compatible with nrf24,
 // but an "emulation layer" was made which can communicate with it
 
-// the rf channels are the same, 
+// the rf channels are the same,
 // and main registers are also the same with some small exceptions
 // some "debug register" allow configuration of some advanced features
 
@@ -87,7 +87,7 @@ delay(1000);
 #ifndef TX_POWER
 #define TX_POWER 7
 #endif
-	
+
 // Gauss filter amplitude - lowest to fix telemetry issue
 //static uint8_t demodcal[2] = { 0x39 , B00000001 };
 //writeregs( demodcal , sizeof(demodcal) );
@@ -95,7 +95,7 @@ delay(1000);
 // powerup defaults
 //static uint8_t rfcal2[7] = { 0x3a , 0x45 , 0x21 , 0xef , 0xac , 0x3a , 0x50};
 //writeregs( rfcal2 , sizeof(rfcal2) );
-	
+
 #define XN_TO_RX B10001111
 #define XN_TO_TX B10000010
 #define XN_POWER B00000111|((TX_POWER&7)<<3)
@@ -132,13 +132,13 @@ void rx_init()
 
     delay(100);
 
-// write rx address " 0 0 0 0 0 "        
+// write rx address " 0 0 0 0 0 "
    static uint8_t rxaddr[6] = { 0x2a , 0 , 0 , 0 , 0 , 0  };
    writeregs( rxaddr , sizeof(rxaddr) );
- 
+
     xn_writereg(RF_CH, 0);      // set radio to channel 0 for bind
-   
-   
+
+
     xn_writereg(EN_AA, 0);      // aa disabled
     xn_writereg(EN_RXADDR, 1);  // pipe 0 only
     xn_writereg(RF_SETUP, XN_POWER);    // power / data rate / lna
@@ -146,8 +146,8 @@ void rx_init()
     xn_writereg(SETUP_RETR, 0); // no retransmissions ( redundant?)
     xn_writereg(SETUP_AW, 3);   // address size (5 bytes)
     xn_command(FLUSH_RX);
-   
-   
+
+
 
 #ifdef RADIO_XN297L
    // it should work without as well
@@ -165,13 +165,13 @@ void rx_init()
     xn_writereg(0, XN_TO_RX);   // power up, crc enabled, rx mode
 
 #ifdef RADIO_CHECK
-    int rxcheck = xn_readreg(0x0f); // rx address pipe 5   
+    int rxcheck = xn_readreg(0x0f); // rx address pipe 5
     // should be 0xc6
     extern void failloop(int);
     if (rxcheck != 0xc6)
         failloop(3);
 #endif
-	
+
 }
 
 
@@ -188,10 +188,10 @@ static char checkpacket()
 	}
 	if( (status & B00001110) != B00001110 )
 	{
-		// rx fifo not empty		
-		return 2;	
+		// rx fifo not empty
+		return 2;
 	}
-	
+
   return 0;
 }
 
@@ -211,32 +211,32 @@ static int decodepacket( void)
 	{
         // calculate checksum
 		 int sum = 0;
-		 for(int i=0; i<14; i++) 
+		 for(int i=0; i<14; i++)
 		 {
 			sum += rxdata[i];
-		 }	
+		 }
 		if ( (sum&0xFF) == rxdata[14] )
 		{
 			rx[0] = packettodata( &rxdata[4] );
 			rx[1] = packettodata( &rxdata[6] );
 			rx[2] = packettodata( &rxdata[10] );
-		// throttle		
+		// throttle
 			rx[3] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
-		
+
 #ifndef DISABLE_EXPO
 	rx[0] = rcexpo ( rx[0] , EXPO_XY );
-	rx[1] = rcexpo ( rx[1] , EXPO_XY ); 
-	rx[2] = rcexpo ( rx[2] , EXPO_YAW ); 	
+	rx[1] = rcexpo ( rx[1] , EXPO_XY );
+	rx[2] = rcexpo ( rx[2] , EXPO_YAW );
 #endif
 
 
 				aux[CH_INV] = (rxdata[3] & 0x80)? 1 : 0; // inverted flag
-						
-				aux[CH_VID] = (rxdata[2] & 0x10) ? 1 : 0;
-												
-				aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;						
 
-							
+				aux[CH_VID] = (rxdata[2] & 0x10) ? 1 : 0;
+
+				aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;
+
+
 			    aux[CH_FLIP] = (rxdata[2] & 0x08) ? 1 : 0;
 
 			    aux[CH_EXPERT] = (rxdata[1] == 0xfa) ? 1 : 0;
@@ -252,8 +252,8 @@ static int decodepacket( void)
 				if ( lastaux[i] != aux[i] ) auxchange[i] = 1;
 				lastaux[i] = aux[i];
 			}
-			
-			return 1;	// valid packet	
+
+			return 1;	// valid packet
 		}
 	 return 0; // sum fail
 	}
@@ -302,7 +302,7 @@ void checkrx(void)
 	if (packetreceived)
 	  {
 		  if (rxmode == RXMODE_BIND)
-		    {	
+		    {
                 // rx bind mode , packet received
 			    xn_readpayload(rxdata, 15);
 
@@ -312,7 +312,7 @@ void checkrx(void)
 				      rfchannel[1] = rxdata[7];
 				      rfchannel[2] = rxdata[8];
 				      rfchannel[3] = rxdata[9];
-							
+
 					int rxaddress[5];
 				      rxaddress[0] = rxdata[1];
 				      rxaddress[1] = rxdata[2];
@@ -322,34 +322,34 @@ void checkrx(void)
 				      //write new address for data packets
 				      xn_writerxaddress(rxaddress);
                       // Set channel frequency for data packet
-				      xn_writereg(0x25, rfchannel[chan]);	
-                      
-                    // set mode to data packets  
+				      xn_writereg(0x25, rfchannel[chan]);
+
+                    // set mode to data packets
 					rxmode = RXMODE_NORMAL;
 
 			      }
 		    }
 		  else
-		    {		
-                // normal mode  
+		    {
+                // normal mode
 
                 unsigned long temptime = gettime();
-	
+
 			    nextchannel();
                 //read payload
 			    xn_readpayload(rxdata, 15);
 			    pass = decodepacket();
-                
+
                 // check if packet is valid
 			    if (pass)
-			      {   
+			      {
                       lastrxtime = temptime;
 				      failsafetime = temptime;
                       // reset failsafe flag
 				      failsafe = 0;
                       //statistics
 				      packetrx++;
-					
+
 			      }
 			    else
 			      {
@@ -360,28 +360,28 @@ void checkrx(void)
 
 	  }// end packet received
 
-		
+
 	unsigned long time = gettime();
 
-		
+
 	// sequence period 12000
     // if nothing received for a while, we change channel
 	if (time - lastrxtime > (PACKET_PERIOD * 3) && rxmode != RXMODE_BIND)
-	  {			
-			//  channel with no reception   
+	  {
+			//  channel with no reception
 		  lastrxtime = time;
-			
+
 			// advance to next channel
 		  nextchannel();
 
 	  }
-			
+
 	// failsafe check
 	if (time - failsafetime > FAILSAFETIME)
-	  {        
+	  {
           // set failsafe flag
 		  failsafe = 1;
-          
+
           // set sticks to zero
 		  rx[0] = 0;
 		  rx[1] = 0;
@@ -389,7 +389,7 @@ void checkrx(void)
 		  rx[3] = 0; // throttle zero just in case
           // failsafe flag should cut throttle anyway
 	  }
-      
+
 // calculate packet rate for debugging
 	if (gettime() - secondtimer > 1000000)
 	  {
@@ -402,10 +402,3 @@ void checkrx(void)
 }
 
 #endif
-
-
-
-
-
-
-

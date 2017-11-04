@@ -62,7 +62,7 @@ void xn_writetxaddress(  int *addr )	;
 #define PLL_LOCK    4
 #define RF_DR       3
 #define RF_PWR      1
-#define LNA_HCURR   0        
+#define LNA_HCURR   0
 #define RX_DR       6
 #define TX_DS       5
 #define MAX_RT      4
