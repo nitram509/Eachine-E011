@@ -1,4 +1,4 @@
-# travis build configuration 
+# travis build configuration
 
 env:
 #Do not define 'global' env vars here.  They cannot be used with API builds
@@ -23,7 +23,7 @@ install:
   - export GCC_DIR=$HOME/gcc-arm-none-eabi-5_4-2016q3
   - export GCC_ARCHIVE=$HOME/gcc-arm-none-eabi-5_4-2016q3-20160926-linux.tar.bz2
   - export GCC_URL=https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q3-update/+download/gcc-arm-none-eabi-5_4-2016q3-20160926-linux.tar.bz2
-  - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ];then 
+  - if [ ! -e $GCC_DIR/bin/arm-none-eabi-gcc ];then
         wget $GCC_URL -O $GCC_ARCHIVE;
         tar xfj $GCC_ARCHIVE -C $HOME;
     fi
@@ -31,8 +31,19 @@ install:
 
 script:
     - ls
-    - cd gcc 
-    - make $TARGET 
+    - cd gcc
+    - make $TARGET
     - make clean
     - make $TARGET
- #   - arm-none-eabi-size h8mini.elf 
+ #   - arm-none-eabi-size h8mini.elf
+
+deploy:
+  provider: s3
+  access_key_id:
+    - secure: "cVinFmQJLuF4mZu99WNw8udwrIDN6n9wEJM3C9Q3u7zxwFCkVIeilXqFFKA5M1Sxyu2szI4OesIQRagi9WWrb048VHsB8EOPgXumCCuFTeuSjpEEGgBOfYeeR6hdbmU462tvL/iDgC2aXA927cgkSEdMufH5Cs8s6f3tUICE6aO1id4xH8KRiIRd/xXt+MFd8rSnHwGnJFev7HZO6I6ROfdJ97nX9Ov0jv2Zz+c+OC/KYecgKBltjb2dDBkejRF0LrCLzpzZ6ZtwxyI21Gdtq3fUC4kfqHIFcn05KzlWDXmYmHUgoCcwnMGbEfAVYG8IJIcubH8hMtsMqygp/iMxiTJg9d+3QyFQvl2DlASgN8qTwgAjkub8Q2NrCs+eB4FRmNPmaf/35zEVWJCPfnBaDOvuV2eknJyq5+H05vRPPHL6cIEopOzCgmktWCuH3Olwndw/TJ//D5fXckQO3e8R7hlrjl33HwFa4CmDtqoYhHxf8mmFJ8TUDtdjRmfU3RjGdQqOXw9oQokWUP9Pt4sh4GKTndrLlVoO0EfKg5Eid2uY9rpJ+w45rqluVJCDxB1pXySBbqrEqiqoslgoCA38y04g0nIYcM75mdLyfRlX6qBNb6Y7gucjeRTJL7n1pbJ9KtNqN/mnpud+OP7S0cwjepYTl1/GAWPnqXjB/bMHW4A="
+  secret_access_key:
+    - secure: "BVM3kSK8Y9nw4Xw2ViOjyv4ylwryterH2959DZ2sqQ6WLYF5vmVK7KiUT/5Jpr86Fi6L+GfJaiFS9TCuOpb4HW9N5bQyWHRvzlqZ2J+FWKI6zzi2r2u2oRvs3MjvSkKpBbo4DDCQw+kEFrtwKcFQR7T9o/qEesUC7Rp0C2FO75ZSpmA11ayAVpeMcECn6mXQf6p9XeX/XRtgmNnGcuilSg19wozXlyQRP+UPd2CQH0IQMmvq6mDTUR+J1x8fjVWX5CDXbORsll/g3gIybA22f75XTaIVTIY4RFKTeHC7M4iyI23ZCXcka2gFdESUjtAeJskh2DwZbUo2oUSeZZxgq7jMOsImnlTHC+/rcODdbXN9NauZSDNfTvNUDoP/7Ro3Ec+7IHlPTUOsZQX03oJ+cPa4iMmQd0l9kjtCrY9sF2VDhW9lsnCbZGgpC1EeAoA+JLrWSU5YVL7eXMpcZ5xIqSHr7d6BDlr8WIprIEWBkGyH3Qx0wxoElBR9lSlzE2YcEC5UA/etCpYDXYYPPAf7JHxOEWMBbKcRw1yLnhg7R6vprX/O0mnzau/fbFf9r9QKszIT6NucLAxkpC1GeG4iZ+1Q4aIS/c2KO7acF/ft3dj1ZbbjNTyp2fPLBlFAQR4NTq1XdalrMK4F32O+WJ5A76upmjfwtDEu27i/BmqV0X4="
+  bucket: "eachine-e011-builds"
+  skip_cleanup: true
+  region: eu-central-1
+  file: "bwhoop.elf"
