@@ -217,16 +217,15 @@ static int decodepacket( void)
 		 }
 		if ( (sum&0xFF) == rxdata[14] )
 		{
-			rx[0] = packettodata( &rxdata[4] );
-			rx[1] = packettodata( &rxdata[6] );
-			rx[2] = packettodata( &rxdata[10] );
-		// throttle
-			rx[3] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
+			rx[ROLL] = packettodata( &rxdata[4] );
+			rx[PITCH] = packettodata( &rxdata[6] );
+			rx[YAW] = packettodata( &rxdata[10] );
+			rx[THROTTLE] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
 
 #ifndef DISABLE_EXPO
-	rx[0] = rcexpo ( rx[0] , EXPO_XY );
-	rx[1] = rcexpo ( rx[1] , EXPO_XY );
-	rx[2] = rcexpo ( rx[2] , EXPO_YAW );
+	rx[ROLL]  = rcexpo ( rx[ROLL] , EXPO_XY );
+	rx[PITCH] = rcexpo ( rx[PITCH] , EXPO_XY );
+	rx[YAW]   = rcexpo ( rx[YAW] , EXPO_YAW );
 #endif
 
 
@@ -383,10 +382,10 @@ void checkrx(void)
 		  failsafe = 1;
 
           // set sticks to zero
-		  rx[0] = 0;
-		  rx[1] = 0;
-		  rx[2] = 0;
-		  rx[3] = 0; // throttle zero just in case
+		  rx[ROLL] = 0;
+		  rx[PITCH] = 0;
+		  rx[YAW] = 0;
+		  rx[THROTTLE] = 0; // throttle zero just in case
           // failsafe flag should cut throttle anyway
 	  }
 

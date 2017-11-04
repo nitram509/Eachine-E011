@@ -109,8 +109,6 @@ float rate_multiplier = 1.0;
 	// make local copy
 
 
-
-
 	for ( int i = 0 ; i < 3 ; i++)
 	{
 		#ifdef STOCK_TX_AUTOCENTER
@@ -233,12 +231,9 @@ pid_precalc();
 	  }
 	else
 	  {	// rate mode
-
 		  error[0] = rxcopy[0] * (float) MAX_RATE * DEGTORAD  - gyro[0];
 		  error[1] = rxcopy[1] * (float) MAX_RATE * DEGTORAD  - gyro[1];
-
-          error[2] = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD  - gyro[2];
-
+      error[2] = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD  - gyro[2];
 	  }
 
 
@@ -250,8 +245,8 @@ pid_precalc();
 float	throttle;
 
 // map throttle so under 10% it is zero
-if ( rx[3] < 0.1f ) throttle = 0;
-else throttle = (rx[3] - 0.1f)*1.11111111f;
+if ( rx[THROTTLE] < 0.1f ) throttle = 0;
+else throttle = (rx[THROTTLE] - 0.1f)*1.11111111f;
 
 
 // turn motors off if throttle is off and pitch / roll sticks are centered

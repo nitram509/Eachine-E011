@@ -129,11 +129,10 @@ static int decodepacket( void)
 {
 	if ( rxdata[0] == 0x55 )
 	{
-		rx[0] = -cx10scale(9); // aileron
-		rx[1] = -cx10scale(11) ; // elev
-		rx[3] = (cx10scale(13) + 1.0f)*0.5f ; // throttle
-		rx[2] = cx10scale(15) ; // throttle
-
+		rx[ROLL] = -cx10scale(9);
+		rx[PITCH] = -cx10scale(11);
+		rx[YAW] = cx10scale(15);
+		rx[THROTTLE] = (cx10scale(13) + 1.0f)*0.5f;
 		#ifndef DISABLE_EXPO
 			rx[0] = rcexpo ( rx[0] , EXPO_XY );
 			rx[1] = rcexpo ( rx[1] , EXPO_XY );
@@ -292,10 +291,10 @@ void checkrx( void)
 		if( time - failsafetime > FAILSAFETIME )
 		{//  failsafe
 		  failsafe = 1;
-			rx[0] = 0;
-			rx[1] = 0;
-			rx[2] = 0;
-			rx[3] = 0;
+			rx[ROLL] = 0;
+			rx[PITCH] = 0;
+			rx[YAW] = 0;
+			rx[THROTTLE] = 0;
 		}
 #ifdef RXDEBUG
 			if ( gettime() - secondtimer  > 1000000)

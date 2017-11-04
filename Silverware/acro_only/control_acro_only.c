@@ -242,12 +242,12 @@ float	throttle;
 
 #ifndef IDLE_UP
 // map throttle so under 10% it is zero
-if ( rx[3] < 0.1f ) throttle = 0;
-else throttle = (rx[3] - 0.1f)*1.11111111f;
+if ( rx[THROTTLE] < 0.1f ) throttle = 0;
+else throttle = (rx[THROTTLE] - 0.1f)*1.11111111f;
 #else
 // check if IDLE_UP switch is on
 if (!aux[IDLE_UP]) throttle = 0;
-else throttle =  (float) IDLE_THR + rx[3] * (1.0f - (float) IDLE_THR);
+else throttle = (float) IDLE_THR + rx[THROTTLE] * (1.0f - (float) IDLE_THR);
 #endif
 
 // turn motors off if throttle is off and pitch / roll sticks are centered
