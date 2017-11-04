@@ -44,14 +44,14 @@ OBJ += Startup.o
 all: $(TARGET)
 
 $(TARGET).hex: $(EXECUTABLE)
-	$(CP) -O ihex $^ $@
+	$(CP) -O ihex $^ $@.hex
 $(TARGET): $(EXECUTABLE)
 	$(CP) -O binary $^ $@
 
 $(EXECUTABLE): $(SRC) $(STARTUP)
 	$(CC) $(CFLAGS) $^ -lm -o $@
 	arm-none-eabi-size $(EXECUTABLE)
-	
+
 
 clean:
 	rm -f Startup.lst $(TARGET) $(TARGET).lst $(OBJ) $(AUTOGEN) \
