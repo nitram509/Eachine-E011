@@ -6,30 +6,30 @@
 // flash save to option bytes , 2*8 bit
 int flash2_fmc_write( int data1 , int data2)
 {
-	
+
     FLASH_Unlock();
     FLASH_OB_Unlock();
 
-	
+
   FLASH_OB_Erase();
 
-	
+
 	FLASH_OB_ProgramData( 0x1FFFF804, data1 );
 
 
 	FLASH_OB_ProgramData( 0x1FFFF806, data2 );
 
-	
+
 	FLASH_Lock();
 	FLASH_OB_Lock();
-	
+
 	return 0;
 }
 
 
 // x = flash2_readdata( OB->DATA0 );
 // x = flash2_readdata( OB->DATA1 );
-	
+
 int flash2_readdata( unsigned int data )
 {
 	// checks that data and ~data are valid
@@ -38,10 +38,10 @@ int flash2_readdata( unsigned int data )
 	complement |=0xFFFFFF00;
 
 	userdata&=0x000000FF;
-	
-	if ( userdata!=~complement) 
+
+	if ( userdata!=~complement)
 		return 127;
-	
+
 	else return userdata;
 }
 

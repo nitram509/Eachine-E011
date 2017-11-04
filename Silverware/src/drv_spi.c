@@ -8,11 +8,11 @@
 #ifdef SOFTSPI_4WIRE
 
 void spi_init(void)
-{    
+{
 	// spi port inits
 
 		GPIO_InitTypeDef  GPIO_InitStructure;
-	
+
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
@@ -20,15 +20,15 @@ void spi_init(void)
 
 	GPIO_InitStructure.GPIO_Pin = SPI_MOSI_PIN;
 	GPIO_Init(SPI_MOSI_PORT, &GPIO_InitStructure);
-	
+
 	GPIO_InitStructure.GPIO_Pin = SPI_CLK_PIN;
 	GPIO_Init(SPI_CLK_PORT, &GPIO_InitStructure);
-	
+
 	GPIO_InitStructure.GPIO_Pin = SPI_SS_PIN;
 	GPIO_Init(SPI_SS_PORT, &GPIO_InitStructure);
-	
+
 	//miso should be input by default
-	
+
 	spi_csoff();
 
 }
@@ -65,15 +65,15 @@ void spi_sendbyte ( int data)
 {
 for ( int i =7 ; i >=0 ; i--)
 	{
-		if (  (data>>i)&1  ) 
+		if (  (data>>i)&1  )
 		{
 			MOSIHIGH;
 		}
-		else 
+		else
 		{
 			MOSILOW;
 		}
-	
+
 		SCKHIGH;
 		SCKLOW;
 	}
@@ -81,15 +81,15 @@ for ( int i =7 ; i >=0 ; i--)
 
 
 int spi_sendrecvbyte2( int data)
-{ 
+{
 	int recv = 0;
 	for ( int i =7 ; i >=0 ; i--)
 	{
-		if ( (data) & (1<<7)  ) 
+		if ( (data) & (1<<7)  )
 		{
 			MOSIHIGH;
 		}
-		else 
+		else
 		{
 			MOSILOW;
 		}
@@ -98,7 +98,7 @@ int spi_sendrecvbyte2( int data)
 		if ( READMISO ) recv= recv|(1<<7);
 		recv = recv<<1;
 		SCKLOW;
-	}	
+	}
 	  recv = recv>>8;
     return recv;
 }
@@ -110,24 +110,24 @@ int spi_sendrecvbyte2( int data)
 	for ( int i = 7 ; i >=0 ; i--)
 	{
 		recv = recv<<1;
-		if ( (data) & (1<<7)  ) 
+		if ( (data) & (1<<7)  )
 		{
 			MOSIHIGH;
 		}
-		else 
+		else
 		{
 			MOSILOW;
 		}
-		
+
 		data = data<<1;
-		
+
 		SCKHIGH;
-		
+
 		if ( READMISO ) recv= recv|1;
 
 		SCKLOW;
-		
-	}	
+
+	}
 
     return recv;
 }
@@ -140,14 +140,14 @@ int spi_sendrecvbyte2( int data)
 	for ( int i = 7 ; i >=0 ; i--)
 	{
 		recv = recv<<1;
-		
+
 		SCKHIGH;
-		
+
 		if ( READMISO ) recv= recv|1;
 
 		SCKLOW;
-		
-	}	
+
+	}
     return recv;
 }
 
@@ -155,12 +155,3 @@ int spi_sendrecvbyte2( int data)
 #pragma pop
 
 #endif
-
-
-
-
-
-
-
-
-

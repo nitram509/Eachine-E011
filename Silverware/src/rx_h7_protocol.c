@@ -109,7 +109,7 @@ void rx_init() {
 static char checkpacket() {
 	int status = xn_readreg( 7 );
 	if ((status & B00001110) != B00001110) {
-		// rx fifo not empty		
+		// rx fifo not empty
 		return 2;
 	}
 
@@ -119,7 +119,7 @@ static char checkpacket() {
 
 uint8_t checksum_offset = 0;
 
-uint8_t calc_checksum( void) 
+uint8_t calc_checksum( void)
 {
 uint8_t result=checksum_offset;
 for(uint8_t i=0; i<8; i++)
@@ -131,13 +131,13 @@ void nextchannel(void)
 {
 	channel++;
 	if(channel > 15) channel = 0;
-	xn_writereg(0x25,  H7_freq[channel]+ channeloffset ); // Set channel frequency	
+	xn_writereg(0x25,  H7_freq[channel]+ channeloffset ); // Set channel frequency
 }
 
 
-int decode_h7(void) {		
+int decode_h7(void) {
 	if (rxdata[8] != calc_checksum() ) return 0;
-	
+
 		rx[3] = 0.0045000f * (225 - rxdata[0]);
 
 		rx[1] = ( ((int)rxdata[3]) - 112) * 0.00888888f;
@@ -151,25 +151,25 @@ int decode_h7(void) {
 		//rxdata[6] default:0, 1: F/S, 128: flip
 
 		aux[0] = (rxdata[6] & H7_FLIP_MASK)?1:0;
-	
+
 		aux[1] = (rxdata[6] & H7_FLAG_VIDEO)?1:0;
-	
+
 		aux[2] = (rxdata[6] & H7_F_S_MASK)?1:0; //??
 
-		
+
 #ifndef DISABLE_EXPO
 		rx[0] = rcexpo ( rx[0] , EXPO_XY );
-		rx[1] = rcexpo ( rx[1] , EXPO_XY ); 
-		rx[2] = rcexpo ( rx[2] , EXPO_YAW ); 	
+		rx[1] = rcexpo ( rx[1] , EXPO_XY );
+		rx[2] = rcexpo ( rx[2] , EXPO_YAW );
 #endif
-	
+
 		for ( int i = 0 ; i < AUXNUMBER - 2 ; i++)
 		{
 			auxchange[i] = 0;
 			if ( lastaux[i] != aux[i] ) auxchange[i] = 1;
 			lastaux[i] = aux[i];
 		}
-	
+
 		return 1;
 }
 
@@ -182,12 +182,12 @@ int chan[16];
 #endif
 
 void checkrx(void) {
-	if (checkpacket()) 
+	if (checkpacket())
 		{
-		unsigned long time = gettime();		
+		unsigned long time = gettime();
 		xn_readpayload(rxdata, PACKET_SIZE);
 		if (rxmode == RXMODE_BIND) {	// rx startup , bind mode
-			if (rxdata[0] == 0x20) {	// bind packet received				
+			if (rxdata[0] == 0x20) {	// bind packet received
 				rxaddress[0] = rxdata[4];
 				rxaddress[1] = rxdata[5];
 				rxaddress[2] = 0;
@@ -199,7 +199,7 @@ void checkrx(void) {
 				nextchannel();
 				checksum_offset = rxdata[7];
 			}
-		} else {	// normal mode	
+		} else {	// normal mode
 			if ( decode_h7() )
 			{
 				failsafetime = time;
@@ -208,7 +208,7 @@ void checkrx(void) {
 				#ifdef DEBUG
 				chan[channel]++;
 				#endif
-				nextchannel();			
+				nextchannel();
 			}
 			else
 			{
@@ -220,12 +220,12 @@ void checkrx(void) {
 
 	}	// end packet received
 
-unsigned long time = gettime();		
-	
+unsigned long time = gettime();
+
 	if ( time - lastrxtime > SKIPCHANNELTIME && rxmode != RXMODE_BIND)
 	{
 		nextchannel();
-		lastrxtime= time;	
+		lastrxtime= time;
 	}
 
 

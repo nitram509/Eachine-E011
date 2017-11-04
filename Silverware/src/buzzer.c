@@ -34,13 +34,13 @@ void buzzer()
 	extern int lowbatt;
 	extern int rxmode;
 	extern unsigned long lastlooptime;
-	
+
 	static int toggle;
 	static unsigned long buzzertime;
 	static int buzzer_init = 0;
-	
+
 	unsigned long pulse_rate;
-	
+
 	// waits 5 seconds
 	// before configuring the gpio buzzer pin to ensure
 	// there is time to program the chip (if using SWDAT or SWCLK)
@@ -52,7 +52,7 @@ void buzzer()
 			buzzertime = time;
 		else
 		{
-			
+
 			// rank lowbatt > failsafe > throttle
 			if (lowbatt)
 				pulse_rate = 200000; // 1/5th second
@@ -69,11 +69,11 @@ void buzzer()
 				{
 					buzzer_init = gpio_init_buzzer();
 				}
-				
+
 				// don't continue if buzzer not initialized
 				if ( !buzzer_init ) return;
-				
-				
+
+
 				// enable buzzer
 				if (time%pulse_rate>pulse_rate/2)
 				{
@@ -81,7 +81,7 @@ void buzzer()
 					{
 					PIN_ON( BUZZER_PIN_PORT, BUZZER_PIN); // on
 					}
-					else 
+					else
 					{
 					PIN_OFF( BUZZER_PIN_PORT, BUZZER_PIN); // off
 					}
@@ -92,7 +92,7 @@ void buzzer()
 					PIN_OFF(BUZZER_PIN_PORT, BUZZER_PIN );
 				}
 			}
-			
+
 		}
 
 	}
@@ -101,13 +101,9 @@ void buzzer()
 		buzzertime = 0;
 		// set buzzer to off if beeping condition stopped
 		if (buzzer_init) PIN_OFF(BUZZER_PIN_PORT, BUZZER_PIN );
-		
+
 	}
-	
+
 }
 
 #endif
-
-
-
-

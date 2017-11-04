@@ -70,7 +70,7 @@ int gestures2()
 		    }
 		  else
 		    {
-			    //      gesture_start = GESTURE_OTHER;  
+			    //      gesture_start = GESTURE_OTHER;
 		    }
 
 		  unsigned long time = gettime();
@@ -163,8 +163,8 @@ uint8_t check_command( uint8_t  buffer1[] , const uint8_t  command[]  )
             {
                 if( buffer1[i] != command[GSIZE - i - 1])
                 return 0;
-            }     
-return 1;            
+            }
+return 1;
 }
 
 int gesture_sequence(int currentgesture)
@@ -192,7 +192,7 @@ int gesture_sequence(int currentgesture)
 			    return GESTURE_LLD;
 		    }
 
-		
+
 		  if (check_command ( &gbuffer[0] , &command2[0] ))
 		    {
 			    // command 2
@@ -202,7 +202,7 @@ int gesture_sequence(int currentgesture)
 			    return GESTURE_RRD;
 		    }
 
-		
+
 		  if (check_command ( &gbuffer[0] , &command3[0] ))
 		    {
 			    // command 3
@@ -220,7 +220,7 @@ int gesture_sequence(int currentgesture)
 			    gbuffer[1] = GESTURE_OTHER;
 			    return GESTURE_UDU;
 		    }
-				
+
 			if (check_command ( &gbuffer[0] , &command5[0] ))
 		    {
 			    // command 5
@@ -229,7 +229,7 @@ int gesture_sequence(int currentgesture)
 			    gbuffer[1] = GESTURE_OTHER;
 			    return GESTURE_UDD;
 		    }
-				
+
 			if (check_command ( &gbuffer[0] , &command6[0] ))
 		    {
 			    // command 6

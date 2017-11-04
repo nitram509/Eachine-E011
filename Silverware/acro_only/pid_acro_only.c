@@ -46,8 +46,8 @@ THE SOFTWARE.
 // B-03 firmware with modified hardware.h for E011
 
 //      	                  ROLL       PITCH     YAW
-float pidkp[PIDNUMBER] = { 16.0e-2 , 16.0e-2 , 5e-1 }; 
-float pidki[PIDNUMBER] = { 12.0e-1 , 12.0e-1 , 3e-1 };	
+float pidkp[PIDNUMBER] = { 16.0e-2 , 16.0e-2 , 5e-1 };
+float pidki[PIDNUMBER] = { 12.0e-1 , 12.0e-1 , 3e-1 };
 float pidkd[PIDNUMBER] = { 8.0e-1 , 8.0e-1 , 0e-1 };
 
 
@@ -58,7 +58,7 @@ float b[3] = { 1.0 , 1.0 , 1.0};
 
 
 
-// output limit			
+// output limit
 const float outlimit[PIDNUMBER] = { 0.8 , 0.8 , 0.5 };
 
 // limit of integral term (abs)
@@ -74,7 +74,7 @@ int current_pid_axis = 0;
 int current_pid_term = 0;
 float * current_pid_term_pointer = pidkp;
 
-float ierror[PIDNUMBER] = { 0 , 0 , 0};	
+float ierror[PIDNUMBER] = { 0 , 0 , 0};
 float pidoutput[PIDNUMBER];
 static float lasterror[PIDNUMBER];
 
@@ -107,9 +107,9 @@ float timefactor;
 // input: error[x] = setpoint - gyro
 // output: pidoutput[x] = change required from motors
 float pid(int x )
-{ 
-    
-    if (onground) 
+{
+
+    if (onground)
     {
     ierror[x] *= 0.98f;
     }
@@ -117,18 +117,18 @@ float pid(int x )
     int iwindup = 0;
     if (( pidoutput[x] == outlimit[x] )&& ( error[x] > 0) )
     {
-        iwindup = 1;		
+        iwindup = 1;
     }
-    
+
     if (( pidoutput[x] == -outlimit[x])&& ( error[x] < 0) )
     {
-        iwindup = 1;				
-    } 
-    
+        iwindup = 1;
+    }
+
     #ifdef ANTI_WINDUP_DISABLE
     iwindup = 0;
     #endif
-    
+
     if ( !iwindup)
     {
         #ifdef MIDPOINT_RULE_INTEGRAL
@@ -136,38 +136,38 @@ float pid(int x )
         ierror[x] = ierror[x] + (error[x] + lasterror[x]) * 0.5f *  pidki[x] * looptime;
         lasterror[x] = error[x];
         #endif
-            
+
         #ifdef RECTANGULAR_RULE_INTEGRAL
         ierror[x] = ierror[x] + error[x] *  pidki[x] * looptime;
-        lasterror[x] = error[x];					
+        lasterror[x] = error[x];
         #endif
-            
+
         #ifdef SIMPSON_RULE_INTEGRAL
         // assuming similar time intervals
-        ierror[x] = ierror[x] + 0.166666f* (lasterror2[x] + 4*lasterror[x] + error[x]) *  pidki[x] * looptime;	
+        ierror[x] = ierror[x] + 0.166666f* (lasterror2[x] + 4*lasterror[x] + error[x]) *  pidki[x] * looptime;
         lasterror2[x] = lasterror[x];
         lasterror[x] = error[x];
-        #endif					
+        #endif
     }
-            
+
     limitf( &ierror[x] , integrallimit[x] );
-    
-    
+
+
     #ifdef ENABLE_SETPOINT_WEIGHTING
     // P term
-    pidoutput[x] = error[x] * ( b[x])* pidkp[x];				
+    pidoutput[x] = error[x] * ( b[x])* pidkp[x];
     // b
     pidoutput[x] +=  - ( 1.0f - b[x])* pidkp[x] * gyro[x];
     #else
     // P term with b disabled
     pidoutput[x] = error[x] * pidkp[x];
     #endif
-    
-    // I term	
+
+    // I term
     pidoutput[x] += ierror[x];
 
     // D term
-    // skip yaw D term if not set               
+    // skip yaw D term if not set
     if ( pidkd[x] > 0 )
     {
         #ifdef NORMAL_DTERM
@@ -176,14 +176,14 @@ float pid(int x )
         #endif
 
         #ifdef NEW_DTERM
-        pidoutput[x] = pidoutput[x] - ( ( 0.5f) *gyro[x] 
+        pidoutput[x] = pidoutput[x] - ( ( 0.5f) *gyro[x]
                     - (0.5f) * lastratexx[x][1] ) * pidkd[x] * timefactor  ;
-                        
+
         lastratexx[x][1] = lastratexx[x][0];
         lastratexx[x][0] = gyro[x];
         #endif
-    
-        #ifdef MAX_FLAT_LPF_DIFF_DTERM 
+
+        #ifdef MAX_FLAT_LPF_DIFF_DTERM
         pidoutput[x] = pidoutput[x] - ( + 0.125f *gyro[x] + 0.250f * lastratexx[x][0]
                     - 0.250f * lastratexx[x][2] - ( 0.125f) * lastratexx[x][3]) * pidkd[x] * timefactor 						;
 
@@ -191,12 +191,12 @@ float pid(int x )
         lastratexx[x][2] = lastratexx[x][1];
         lastratexx[x][1] = lastratexx[x][0];
         lastratexx[x][0] = gyro[x];
-        #endif            
+        #endif
     }
-    
+
     limitf(  &pidoutput[x] , outlimit[x]);
 
-return pidoutput[x];		 		
+return pidoutput[x];
 }
 
 // calculate change from ideal loop time
@@ -218,7 +218,7 @@ void pid_precalc()
 int next_pid_term()
 {
 //	current_pid_axis = 0;
-	
+
 	switch (current_pid_term)
 	{
 		case 0:
@@ -234,7 +234,7 @@ int next_pid_term()
 			current_pid_term = 0;
 			break;
 	}
-	
+
 	return current_pid_term + 1;
 }
 
@@ -260,7 +260,7 @@ int next_pid_axis()
 		current_pid_axis++;
 		#endif
 	}
-	
+
 	return current_pid_axis + 1;
 }
 
@@ -276,15 +276,15 @@ int change_pid_value(int increase)
 	else {
 		number_of_increments[current_pid_term][current_pid_axis]--;
 	}
-    
+
 	current_pid_term_pointer[current_pid_axis] = current_pid_term_pointer[current_pid_axis] * multiplier;
-	
+
     #ifdef COMBINE_PITCH_ROLL_PID_TUNING
 	if (current_pid_axis == 0) {
 		current_pid_term_pointer[current_pid_axis+1] = current_pid_term_pointer[current_pid_axis+1] * multiplier;
 	}
 	#endif
-	
+
 	return abs(number_of_increments[current_pid_term][current_pid_axis]);
 }
 
@@ -302,5 +302,3 @@ int decrease_pid()
 {
 	return change_pid_value(0);
 }
-
-

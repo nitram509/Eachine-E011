@@ -63,7 +63,7 @@ void xn_readpayload( int *data , int size )
 
 
 
-void xn_writerxaddress(  int *addr )	
+void xn_writerxaddress(  int *addr )
 {
  int index = 0;
 spi_cson();
@@ -77,7 +77,7 @@ spi_csoff();
 }
 
 
-void xn_writetxaddress(  int *addr )	
+void xn_writetxaddress(  int *addr )
 {
  int index = 0;
 spi_cson();
@@ -105,14 +105,3 @@ void xn_writepayload( int data[] , int size )
 }
 
 #endif
-
-
-
-
-
-
-
-
-
-
-

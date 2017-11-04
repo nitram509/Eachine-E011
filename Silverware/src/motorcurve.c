@@ -70,7 +70,7 @@ float motormap(float input)
 
 #ifdef MOTOR_CURVE_6MM_H101_490HZ
 float motormap( float input)
-{ 
+{
 
 	// H101 thrust curve for normal thrust direction
 	// a*x^2 + b*x + c
@@ -81,7 +81,7 @@ if (input < 0) input = 0;
 input = input*input*0.277f  + input*(0.715f);
 input += 0.0102f;
 
-return input;   
+return input;
 }
 #endif
 
@@ -99,7 +99,7 @@ float motormap(float input)
 // Hubsan 8.5mm 8khz pwm motor map
 float motormap(float input)
 {
-//      Hubsan 8.5mm motors and props 
+//      Hubsan 8.5mm motors and props
 
 	if (input > 1)
 		input = 1;
@@ -118,7 +118,7 @@ float motormap(float input)
 // Hubsan 8.5mm 8khz pwm motor map
 float motormap(float input)
 {
-//      Hubsan 8.5mm motors and props 
+//      Hubsan 8.5mm motors and props
 
 	if (input > 1)
 		input = 1;
@@ -137,7 +137,7 @@ float motormap(float input)
 // Hubsan 8.5mm 32khz pwm motor map
 float motormap(float input)
 {
-//      Hubsan 8.5mm motors and props 
+//      Hubsan 8.5mm motors and props
 
 	if (input > 1)
 		input = 1;
@@ -150,4 +150,3 @@ float motormap(float input)
 	return input;
 }
 #endif
-

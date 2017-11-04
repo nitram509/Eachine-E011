@@ -12,7 +12,7 @@
 // acro pids are also used at the same time in level mode
 
 // yaw is done by the rate yaw pid
-// Kp                       ROLL     PITCH  
+// Kp                       ROLL     PITCH
 float apidkp[APIDNUMBER] = {11e-2, 11e-2 };
 
 // Kd
@@ -43,7 +43,7 @@ float apid(int x)
 
 
 extern float timefactor;
-      
+
     apidoutput[x] = apidoutput[x] + (angleerror[x] - lasterror[x]) * apidkd[x] * timefactor;
     lasterror[x] = angleerror[x];
 

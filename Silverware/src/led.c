@@ -59,12 +59,12 @@ void ledon( uint8_t val )
 	if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
 	#endif
 #endif
-			
+
 }
 
 void ledoff( uint8_t val )
 {
-#if ( LED_NUMBER > 0 )	
+#if ( LED_NUMBER > 0 )
 	#ifdef LED1_INVERT
 	if ( val&1)	GPIO_SetBits( LED1PORT, LED1PIN);
 	#else
@@ -89,14 +89,14 @@ void ledoff( uint8_t val )
 	#ifdef LED1_INVERT
 	if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
 	#else
-	if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);	
+	if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);
 	#endif
 #endif
 }
 
 void ledflash( uint32_t period , int duty )
 {
-#if ( LED_NUMBER > 0 )	
+#if ( LED_NUMBER > 0 )
 	if ( gettime() % period > (period*duty)>>4 )
 	{
 		ledon(LEDALL);
@@ -105,7 +105,7 @@ void ledflash( uint32_t period , int duty )
 	{
 		ledoff(LEDALL);
 	}
-#endif	
+#endif
 }
 
 
@@ -114,7 +114,7 @@ int ledlevel = 0;
 uint8_t led_pwm2( uint8_t pwmval)
 {
 static int loopcount = 0;
-	
+
 ledlevel = pwmval;
 loopcount++;
 loopcount&=0xF;
@@ -146,20 +146,20 @@ uint8_t led_pwm( uint8_t pwmval)
 {
 	static float ds_integrator= 0;
 	unsigned int time = gettime();
-	unsigned int ledtime = time - lastledtime; 
+	unsigned int ledtime = time - lastledtime;
 
 	lastledtime = time;
 
-	
+
 	float desiredbrightness = pwmval*( 1.0f/ 15.0f);
 
 //	limitf( &lastledbrightness, 2);
 
 	limitf( &ds_integrator, 2);
-	
+
 	ds_integrator += (desiredbrightness - lastledbrightness)*ledtime* ( 1.0f  /(float) LOOPTIME);
-	
-	if ( ds_integrator > 0.49f ) 
+
+	if ( ds_integrator > 0.49f )
 		{
 		ledon( 255);
 			lastledbrightness = 1.0f;
@@ -176,15 +176,6 @@ uint8_t led_pwm( uint8_t pwmval)
 			debug_led<<=1;
 			debug_led&=0xFFFFFFFE;
 			#endif
-		}	
-return 0;	
+		}
+return 0;
 }
-
-
-
-
-
-
-
-
-

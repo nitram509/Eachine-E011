@@ -42,26 +42,26 @@ void flash_save( void) {
 
     fmc_unlock();
 	fmc_erase();
-	
+
 	unsigned long addresscount = 0;
 
     writeword(addresscount++, FMC_HEADER);
-   
+
 	fmc_write_float(addresscount++, initial_pid_identifier );
-	
+
 	for (int i=0;  i<3 ; i++) {
 		for (int j=0; j<3 ; j++) {
             fmc_write_float(addresscount++, pids_array[i][j]);
 		}
 	}
- 
+
 
     fmc_write_float(addresscount++, accelcal[0]);
     fmc_write_float(addresscount++, accelcal[1]);
     fmc_write_float(addresscount++, accelcal[2]);
 
     writeword(255, FMC_HEADER);
-    
+
 	fmc_lock();
 }
 
@@ -75,7 +75,7 @@ void flash_load( void) {
     {
 
      saved_pid_identifier = fmc_read_float(addresscount++);
-// load pids from flash if pid.c values are still the same       
+// load pids from flash if pid.c values are still the same
      if (  saved_pid_identifier == initial_pid_identifier )
      {
          for (int i=0;  i<3 ; i++) {
@@ -85,19 +85,19 @@ void flash_load( void) {
         }
      }
      else{
-         addresscount+=9; 
-     }    
+         addresscount+=9;
+     }
 
     accelcal[0] = fmc_read_float(addresscount++ );
     accelcal[1] = fmc_read_float(addresscount++ );
-    accelcal[2] = fmc_read_float(addresscount++ );  
+    accelcal[2] = fmc_read_float(addresscount++ );
 
     }
     else
     {
-        
+
     }
-    
+
 }
 
 

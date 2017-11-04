@@ -93,24 +93,24 @@ float underthrottlefilt = 0;
 float rxcopy[4];
 
 void control( void)
-{	
+{
 
 // rates / expert mode
 float rate_multiplier = 1.0;
-	
+
 	if ( aux[RATES]  )
-	{		
-		
+	{
+
 	}
 	else
 	{
 		rate_multiplier = LOW_RATES_MULTI;
 	}
 	// make local copy
-	
 
-	
-	
+
+
+
 	for ( int i = 0 ; i < 3 ; i++)
 	{
 		#ifdef STOCK_TX_AUTOCENTER
@@ -121,9 +121,9 @@ float rate_multiplier = 1.0;
 	}
 
 
-#ifndef DISABLE_FLIP_SEQUENCER	
+#ifndef DISABLE_FLIP_SEQUENCER
   flip_sequencer();
-	
+
 	if ( controls_override)
 	{
 		for ( int i = 0 ; i < 3 ; i++)
@@ -134,10 +134,10 @@ float rate_multiplier = 1.0;
 
 	if ( auxchange[STARTFLIP]&&!aux[STARTFLIP] )
 	{// only on high -> low transition
-		start_flip();		
+		start_flip();
 	}
-#endif	
-	
+#endif
+
 	// check for accelerometer calibration command
 	if ( onground )
 	{
@@ -148,12 +148,12 @@ float rate_multiplier = 1.0;
         {
             if (command == GESTURE_DDD)
 		    {
-			                  
+
                 //skip accel calibration if pid gestures used
                 if ( !pid_gestures_used )
                 {
                     gyro_cal();	// for flashing lights
-                    acc_cal();                   
+                    acc_cal();
                 }
                 else
                 {
@@ -164,17 +164,17 @@ float rate_multiplier = 1.0;
                 extern float accelcal[3];
                 flash2_fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
                 #endif
-                
+
                 #ifdef FLASH_SAVE1
 			    extern void flash_save( void);
                 extern void flash_load( void);
                 flash_save( );
                 flash_load( );
                 #endif
-			    // reset loop time 
+			    // reset loop time
 			    extern unsigned long lastlooptime;
 			    lastlooptime = gettime();
-		    }		
+		    }
 
             if (command == GESTURE_RRD)
               {
@@ -186,9 +186,9 @@ float rate_multiplier = 1.0;
                   ledcommand = 1;
                   aux[CH_AUX1] = 0;
               }
-            #ifdef PID_GESTURE_TUNING              
-            if ( command >= GESTURE_UDR ) pid_gestures_used = 1;   
-              
+            #ifdef PID_GESTURE_TUNING
+            if ( command >= GESTURE_UDR ) pid_gestures_used = 1;
+
            // int blink = 0;
             if (command == GESTURE_UDU)
               {
@@ -218,18 +218,18 @@ float rate_multiplier = 1.0;
                 #endif
 
 	  }
-		#endif		
+		#endif
 	}
 
 
-pid_precalc();	
+pid_precalc();
 
 
 	// flight control
 	if (aux[LEVELMODE]&&!acro_override)
 	  {	   // level mode
            // level calculations done after to reduce latency in acro mode
-          
+
 	  }
 	else
 	  {	// rate mode
@@ -249,13 +249,13 @@ pid_precalc();
 
 float	throttle;
 
-// map throttle so under 10% it is zero	
+// map throttle so under 10% it is zero
 if ( rx[3] < 0.1f ) throttle = 0;
 else throttle = (rx[3] - 0.1f)*1.11111111f;
 
 
 // turn motors off if throttle is off and pitch / roll sticks are centered
-	if ( failsafe || (throttle < 0.001f && (!ENABLESTIX || !onground_long || aux[LEVELMODE] || (fabsf(rx[ROLL]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[PITCH]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[YAW]) < (float) ENABLESTIX_TRESHOLD ) ) ) ) 
+	if ( failsafe || (throttle < 0.001f && (!ENABLESTIX || !onground_long || aux[LEVELMODE] || (fabsf(rx[ROLL]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[PITCH]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[YAW]) < (float) ENABLESTIX_TRESHOLD ) ) ) )
 	{	// motors off
 
 		if ( onground_long )
@@ -264,17 +264,17 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 			{
 				onground_long = 0;
 			}
-		}	
-		
+		}
+
 		for ( int i = 0 ; i <= 3 ; i++)
 		{
-			pwm_set( i , 0 );	
-			#ifdef MOTOR_FILTER	
+			pwm_set( i , 0 );
+			#ifdef MOTOR_FILTER
 			// reset the motor filter
 			motorfilter( 0 , i);
 			#endif
-		}	
-		
+		}
+
 		#ifdef MOTOR_BEEPS
 		extern void motorbeep( void);
 		motorbeep();
@@ -284,15 +284,15 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 		// reset the overthrottle filter
 		lpf(&overthrottlefilt, 0.0f, 0.72f);	// 50hz 1khz sample rate
 		lpf(&underthrottlefilt, 0.0f, 0.72f);	// 50hz 1khz sample rate
-		#endif				
-		
+		#endif
+
 		#ifdef STOCK_TX_AUTOCENTER
 		for( int i = 0 ; i <3;i++)
 			{
 				if ( rx[i] == lastrx[i] )
 					{
 						consecutive[i]++;
-						
+
 					}
 				else consecutive[i] = 0;
 				lastrx[i] = rx[i];
@@ -301,40 +301,40 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 						autocenter[i] = rx[i];
 					}
 			}
-		#endif				
-		
+		#endif
+
 		onground = 1;
 		thrsum = 0;
-		
+
 	}
 	else
 	{// motors on - normal flight
-		
+
 		onground = 0;
 		onground_long = gettime();
-		
-		float mix[4];	
+
+		float mix[4];
 
 #ifdef 	THROTTLE_TRANSIENT_COMPENSATION
-        
-#ifndef THROTTLE_TRANSIENT_COMPENSATION_FACTOR 
- #define THROTTLE_TRANSIENT_COMPENSATION_FACTOR 7.0 
-#endif        
+
+#ifndef THROTTLE_TRANSIENT_COMPENSATION_FACTOR
+ #define THROTTLE_TRANSIENT_COMPENSATION_FACTOR 7.0
+#endif
 extern float throttlehpf( float in );
-        
+
 		  throttle += (float) (THROTTLE_TRANSIENT_COMPENSATION_FACTOR) * throttlehpf(throttle);
 		  if (throttle < 0)
 			  throttle = 0;
 		  if (throttle > 1.0f)
 			  throttle = 1.0f;
 #endif
-		
+
 	if ( controls_override)
 	{// change throttle in flip mode
 		throttle = rx_override[3];
 	}
-		
-	
+
+
 		  // throttle angle compensation
 #ifdef AUTO_THROTTLE
 		  if (aux[LEVELMODE])
@@ -356,7 +356,7 @@ extern float throttlehpf( float in );
 
 		    }
 #endif
-	
+
 
 
 #ifdef LVC_LOWER_THROTTLE
@@ -368,15 +368,15 @@ static float throttle_i = 0.0f;
  float throttle_p = 0.0f;
 
 // can be made into a function
-if (vbattfilt < (float) LVC_LOWER_THROTTLE_VOLTAGE_RAW ) 
+if (vbattfilt < (float) LVC_LOWER_THROTTLE_VOLTAGE_RAW )
    throttle_p = ((float) LVC_LOWER_THROTTLE_VOLTAGE_RAW - vbattfilt) *(float) LVC_LOWER_THROTTLE_KP;
 // can be made into a function
-if (vbatt_comp < (float) LVC_LOWER_THROTTLE_VOLTAGE) 
-   throttle_p = ((float) LVC_LOWER_THROTTLE_VOLTAGE - vbatt_comp) *(float) LVC_LOWER_THROTTLE_KP;	
+if (vbatt_comp < (float) LVC_LOWER_THROTTLE_VOLTAGE)
+   throttle_p = ((float) LVC_LOWER_THROTTLE_VOLTAGE - vbatt_comp) *(float) LVC_LOWER_THROTTLE_KP;
 
 if ( throttle_p > 1.0f ) throttle_p = 1.0f;
 
-if ( throttle_p > 0 ) 
+if ( throttle_p > 0 )
 {
     throttle_i += throttle_p * 0.0001f; //ki
 }
@@ -389,29 +389,29 @@ throttle -= throttle_p + throttle_i;
 #endif
 
 #ifdef INVERT_YAW_PID
-pidoutput[2] = -pidoutput[2];			
+pidoutput[2] = -pidoutput[2];
 #endif
-		
+
 		mix[MOTOR_FR] = throttle - pidoutput[ROLL] - pidoutput[PITCH] + pidoutput[YAW];		// FR
-		mix[MOTOR_FL] = throttle + pidoutput[ROLL] - pidoutput[PITCH] - pidoutput[YAW];		// FL	
+		mix[MOTOR_FL] = throttle + pidoutput[ROLL] - pidoutput[PITCH] - pidoutput[YAW];		// FL
 		mix[MOTOR_BR] = throttle - pidoutput[ROLL] + pidoutput[PITCH] - pidoutput[YAW];		// BR
-		mix[MOTOR_BL] = throttle + pidoutput[ROLL] + pidoutput[PITCH] + pidoutput[YAW];		// BL	
-		
+		mix[MOTOR_BL] = throttle + pidoutput[ROLL] + pidoutput[PITCH] + pidoutput[YAW];		// BL
+
 #ifdef INVERT_YAW_PID
 // we invert again cause it's used by the pid internally (for limit)
-pidoutput[2] = -pidoutput[2];			
+pidoutput[2] = -pidoutput[2];
 #endif
 
 		for ( int i = 0 ; i <= 3 ; i++)
-		{			
-		#ifdef MOTOR_FILTER		
+		{
+		#ifdef MOTOR_FILTER
 		mix[i] = motorfilter(  mix[i] , i);
-		#endif	
-		
-        #ifdef MOTOR_FILTER2_ALPHA	
-        float motorlpf( float in , int x) ;           
+		#endif
+
+        #ifdef MOTOR_FILTER2_ALPHA
+        float motorlpf( float in , int x) ;
 		mix[i] = motorlpf(  mix[i] , i);
-		#endif	
+		#endif
         }
 
 
@@ -428,9 +428,9 @@ pidoutput[2] = -pidoutput[2];
 //#define MIX_THROTTLE_FILTER_LPF
 
 // limit reduction and increase to this amount ( 0.0 - 1.0)
-// 0.0 = no action 
-// 0.5 = reduce up to 1/2 throttle      
-//1.0 = reduce all the way to zero 
+// 0.0 = no action
+// 0.5 = reduce up to 1/2 throttle
+//1.0 = reduce all the way to zero
 #ifndef MIX_THROTTLE_REDUCTION_MAX
 #define MIX_THROTTLE_REDUCTION_MAX 0.5
 #endif
@@ -442,7 +442,7 @@ pidoutput[2] = -pidoutput[2];
 
 		  float overthrottle = 0;
 		  float underthrottle = 0.001f;
-		
+
 		  for (int i = 0; i < 4; i++)
 		    {
 			    if (mix[i] > overthrottle)
@@ -452,7 +452,7 @@ pidoutput[2] = -pidoutput[2];
 		    }
 
 #ifdef MIX_LOWER_THROTTLE
-            
+
 		  overthrottle -= MIX_MOTOR_MAX ;
 
 		  if (overthrottle > (float)MIX_THROTTLE_REDUCTION_MAX)
@@ -470,15 +470,15 @@ pidoutput[2] = -pidoutput[2];
 			  overthrottlefilt -= 0.01f;
 #endif
 #else
-overthrottle = 0.0f;        
+overthrottle = 0.0f;
 #endif
-          
+
 #ifdef MIX_INCREASE_THROTTLE
-// under			
-			
+// under
+
 		  if (underthrottle < -(float)MIX_THROTTLE_REDUCTION_MAX)
 			  underthrottle = -(float)MIX_THROTTLE_REDUCTION_MAX;
-			
+
 #ifdef MIX_THROTTLE_FILTER_LPF
 		  if (underthrottle < underthrottlefilt)
 			  lpf(&underthrottlefilt, underthrottle, 0.82);	// 20hz 1khz sample rate
@@ -497,15 +497,15 @@ overthrottle = 0.0f;
 			  underthrottlefilt = 0.1;
 
 			underthrottle = underthrottlefilt;
-					
+
 			if (underthrottle > 0.0f)
 			  underthrottle = 0.0001f;
 
 			underthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
 #else
-  underthrottle = 0.001f;			
-#endif			
-// over			
+  underthrottle = 0.001f;
+#endif
+// over
 		  if (overthrottlefilt > (float)MIX_THROTTLE_REDUCTION_MAX)
 			  overthrottlefilt = (float)MIX_THROTTLE_REDUCTION_MAX;
 		  if (overthrottlefilt < -0.1f)
@@ -514,16 +514,16 @@ overthrottle = 0.0f;
 
 		  overthrottle = overthrottlefilt;
 
-			
+
 		  if (overthrottle < 0.0f)
 			  overthrottle = -0.0001f;
 
-			
+
 			// reduce by a percentage only, so we get an inbetween performance
 			overthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
 
-			
-			
+
+
 		  if (overthrottle > 0 || underthrottle < 0 )
 		    {		// exceeding max motor thrust
 					float temp = overthrottle + underthrottle;
@@ -532,7 +532,7 @@ overthrottle = 0.0f;
 				      mix[i] -= temp;
 			      }
 		    }
-#endif				
+#endif
 
 
 #ifdef MIX_LOWER_THROTTLE_3
@@ -595,14 +595,14 @@ if ( underthrottle < -0.01f) ledcommand = 1;
 }
 #endif
 
-            
-            
-            
-thrsum = 0;		
-				
+
+
+
+thrsum = 0;
+
 		for ( int i = 0 ; i <= 3 ; i++)
-		{			
-		           
+		{
+
 		#ifdef CLIP_FF
 		mix[i] = clip_ff(mix[i], i);
 		#endif
@@ -620,8 +620,8 @@ thrsum = 0;
 			mix[i] = (float) MOTOR_MIN_VALUE;
 		}
 		#endif
-		
-			
+
+
 		#ifndef NOMOTORS
 		#ifndef MOTORS_TO_THROTTLE
 		//normal mode
@@ -636,31 +636,31 @@ thrsum = 0;
 		#warning "NO MOTORS"
 		tempx[i] = motormap( mix[i] );
 		#endif
-		
+
 		if ( mix[i] < 0 ) mix[i] = 0;
 		if ( mix[i] > 1 ) mix[i] = 1;
 		thrsum+= mix[i];
-		}	
+		}
 		thrsum = thrsum / 4;
-		
+
 	}// end motors on
 
-   
+
     if (aux[LEVELMODE]&&!acro_override)
     {
         // level mode calculations done after to reduce latency
         // the 1ms extra latency should not affect cascaded pids significantly
-        
+
       	extern void stick_vector( float rx_input[] , float maxangle);
-		extern float errorvect[]; // level mode angle error calculated by stick_vector.c					
+		extern float errorvect[]; // level mode angle error calculated by stick_vector.c
         extern float GEstG[3]; // gravity vector for yaw feedforward
         float yawerror[3] = {0}; // yaw rotation vector
 
         // calculate roll / pitch error
-		stick_vector( rxcopy , 0 ); 
-           
-        float yawrate = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD;            
-        // apply yaw from the top of the quad            
+		stick_vector( rxcopy , 0 );
+
+        float yawrate = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD;
+        // apply yaw from the top of the quad
         yawerror[0] = GEstG[1] * yawrate;
         yawerror[1] = - GEstG[0] * yawrate;
         yawerror[2] = GEstG[2] * yawrate;
@@ -668,14 +668,14 @@ thrsum = 0;
         // pitch and roll
 		for ( int i = 0 ; i <=1; i++)
 			{
-            angleerror[i] = errorvect[i]* RADTODEG ;    
+            angleerror[i] = errorvect[i]* RADTODEG ;
 			error[i] = apid(i) + yawerror[i] - gyro[i];
 			}
         // yaw
-		error[2] = yawerror[2]  - gyro[2];  
+		error[2] = yawerror[2]  - gyro[2];
     }
-    
-	
+
+
 }
 
 
@@ -688,9 +688,9 @@ float motor_filt[4];
 
 float motorlpf( float in , int x)
 {
-    
+
     lpf(&motor_filt[x] , in , 1 - MOTOR_FILTER2_ALPHA);
-       
+
     return motor_filt[x];
 }
 
@@ -702,16 +702,16 @@ float hann_lastsample2[4];
 float motorfilter( float motorin ,int number)
 {
  	float ans = motorin*0.25f + hann_lastsample[number] * 0.5f +   hann_lastsample2[number] * 0.25f ;
-	
+
 	hann_lastsample2[number] = hann_lastsample[number];
 	hann_lastsample[number] = motorin;
-	
+
 	return ans;
 }
 
 
 float clip_feedforward[4];
-// clip feedforward adds the amount of thrust exceeding 1.0 ( max) 
+// clip feedforward adds the amount of thrust exceeding 1.0 ( max)
 // to the next iteration(s) of the loop
 // so samples 0.5 , 1.5 , 0.4 would transform into 0.5 , 1.0 , 0.9;
 
@@ -721,7 +721,7 @@ float clip_ff(float motorin, int number)
 	if (motorin > 1.0f)
 	  {
 		  clip_feedforward[number] += (motorin - 1.0f);
-		  //cap feedforward to prevent windup 
+		  //cap feedforward to prevent windup
 		  if (clip_feedforward[number] > .5f)
 			  clip_feedforward[number] = .5f;
 	  }

@@ -13,39 +13,3 @@ void auxledoff( uint8_t val );
 void auxledflash( uint32_t period , int duty );
 
 uint8_t led_pwm( uint8_t pwmval);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

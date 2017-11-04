@@ -7,7 +7,7 @@
 #include "drv_time.h"
 
 
-// sbus input ( pin SWCLK after calibration) 
+// sbus input ( pin SWCLK after calibration)
 // WILL DISABLE PROGRAMMING AFTER GYRO CALIBRATION - 2 - 3 seconds after powerup)
 
 
@@ -48,8 +48,8 @@ int rx_state = 0;
 uint8_t data[25];
 int channels[9];
 
-int failsafe_sbus_failsafe = 0;   
-int failsafe_siglost = 0; 
+int failsafe_sbus_failsafe = 0;
+int failsafe_siglost = 0;
 int failsafe_noframes = 0;
 
 // enable statistics
@@ -69,30 +69,30 @@ void USART1_IRQHandler(void)
 {
     rx_buffer[rx_end] = USART_ReceiveData(USART1);
     // calculate timing since last rx
-    unsigned long  maxticks = SysTick->LOAD;	
-    unsigned long ticks = SysTick->VAL;	
-    unsigned long elapsedticks;	
+    unsigned long  maxticks = SysTick->LOAD;
+    unsigned long ticks = SysTick->VAL;
+    unsigned long elapsedticks;
     static unsigned long lastticks;
-    if (ticks < lastticks) 
-        elapsedticks = lastticks - ticks;	
+    if (ticks < lastticks)
+        elapsedticks = lastticks - ticks;
     else
         {// overflow ( underflow really)
-        elapsedticks = lastticks + ( maxticks - ticks);	
+        elapsedticks = lastticks + ( maxticks - ticks);
         }
 
-    if ( elapsedticks < 65536 ) rx_time[rx_end] = elapsedticks; 
+    if ( elapsedticks < 65536 ) rx_time[rx_end] = elapsedticks;
     else rx_time[rx_end] = 65535;
 
     lastticks = ticks;
-       
+
     if ( USART_GetFlagStatus(USART1 , USART_FLAG_ORE ) )
     {
-      // overflow means something was lost 
+      // overflow means something was lost
       rx_time[rx_end]= 0xFFFe;
       USART_ClearFlag( USART1 , USART_FLAG_ORE );
       if ( sbus_stats ) stat_overflow++;
-    }    
-        
+    }
+
     rx_end++;
     rx_end%=(RX_BUFF_SIZE);
 }
@@ -103,19 +103,19 @@ void sbus_init(void)
 {
     // make sure there is some time to program the board
     if ( gettime() < 2000000 ) return;
-    
+
     GPIO_InitTypeDef  GPIO_InitStructure;
 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;	
-    GPIO_Init(GPIOA, &GPIO_InitStructure); 
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource14 , GPIO_AF_1);
-     
+
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
 
@@ -156,32 +156,32 @@ void sbus_init(void)
 
 void rx_init(void)
 {
-    
+
 }
 
 
 void checkrx()
 {
- 
+
 if ( framestarted == 0)
 {
     while (  rx_end != rx_start )
-    { 
+    {
     if ( rx_buffer[rx_start] == 0x0f )
             {
                 // start detected
                 framestart = rx_start;
                 rx_start = rx_start;
-                framestarted = 1;  
-                stat_framestartcount++; 
-            break;                
-            }         
+                framestarted = 1;
+                stat_framestartcount++;
+            break;
+            }
     rx_start++;
     rx_start%=(RX_BUFF_SIZE);
-            
+
     stat_garbage++;
     }
-            
+
 }
 else if ( framestarted == 1)
 {
@@ -190,38 +190,38 @@ else if ( framestarted == 1)
     if (rx_end > framestart ) size = rx_end - framestart;
     else size = RX_BUFF_SIZE - framestart + rx_end;
  if ( size >= 24 )
-    {    
-    int timing_fail = 0; 
-        
-    for ( int i = framestart ; i <framestart + 25; i++  )  
+    {
+    int timing_fail = 0;
+
+    for ( int i = framestart ; i <framestart + 25; i++  )
     {
       data[ i - framestart] = rx_buffer[i%(RX_BUFF_SIZE)];
       int symboltime = rx_time[i%(RX_BUFF_SIZE)];
       //stat_timing[ i - framestart] = symboltime;
       if ( symboltime > 1024 &&  i - framestart > 0 ) timing_fail = 1;
-    }    
+    }
 
-   if (!timing_fail) 
+   if (!timing_fail)
    {
        frame_received = 1;
-          
-      if (data[23] & (1<<2)) 
-      {       
+
+      if (data[23] & (1<<2))
+      {
        // frame lost bit
        if ( !time_siglost ) time_siglost = gettime();
-       if ( gettime() - time_siglost > 1000000 ) 
+       if ( gettime() - time_siglost > 1000000 )
        {
-           failsafe_siglost = 1;   
+           failsafe_siglost = 1;
        }
       }
       else
       {
-        time_siglost = 0;  
+        time_siglost = 0;
         failsafe_siglost = 0;
       }
 
-      
-      if (data[23] & (1<<3)) 
+
+      if (data[23] & (1<<3))
       {
         // failsafe bit
         failsafe_sbus_failsafe = 1;
@@ -229,31 +229,31 @@ else if ( framestarted == 1)
       else{
           failsafe_sbus_failsafe = 0;
       }
-      
-           
-   }else if (sbus_stats) stat_timing_fail++; 
-    
+
+
+   }else if (sbus_stats) stat_timing_fail++;
+
    last_byte = data[24];
 
-  
+
     rx_start = rx_end;
     framestarted = 0;
-    
-    } // end frame complete  
-    
+
+    } // end frame complete
+
 }// end frame pending
 else
     if ( framestarted < 0)
     {
         // initialize sbus
       sbus_init();
-       // set in routine above "framestarted = 0;"    
+       // set in routine above "framestarted = 0;"
     }
-      
+
 if ( frame_received )
 {
    int channels[9];
-   //decode frame    
+   //decode frame
    channels[0]  = ((data[1]|data[2]<< 8) & 0x07FF);
    channels[1]  = ((data[2]>>3|data[3]<<5) & 0x07FF);
    channels[2]  = ((data[3]>>6|data[4]<<2|data[5]<<10) & 0x07FF);
@@ -267,63 +267,63 @@ if ( frame_received )
     if ( rx_state == 0)
     {
      // wait for valid sbus signal
-     static int frame_count = 0; 
+     static int frame_count = 0;
      failsafe = 1;
-     rxmode = RXMODE_BIND; 
-     // if throttle < 10%   
+     rxmode = RXMODE_BIND;
+     // if throttle < 10%
      if (  channels[2] < 336 ) frame_count++;
      if (frame_count  > 130 )
      {
          if( stat_frames_second > 30 )
          {
-             rx_state++; 
-             rxmode = !RXMODE_BIND; 
+             rx_state++;
+             rxmode = !RXMODE_BIND;
          }
          else
          {
              frame_count = 0;
          }
      }
-      
+
     }
-    
+
     if ( rx_state == 1)
     {
       // normal rx mode
-        
+
       // AETR channel order
-        channels[0] -= 993;           
+        channels[0] -= 993;
         channels[1] -= 993;
-        channels[3] -= 993;      
-        
-        rx[0] = channels[0];  
-        rx[1] = channels[1]; 
-        rx[2] = channels[3];  
-      
+        channels[3] -= 993;
+
+        rx[0] = channels[0];
+        rx[1] = channels[1];
+        rx[2] = channels[3];
+
         for ( int i = 0 ; i < 3 ; i++)
         {
-         rx[i] *= 0.00122026f;             
+         rx[i] *= 0.00122026f;
         }
-        
-        channels[2]-= 173; 
-        rx[3] = 0.000610128f * channels[2]; 
-        
+
+        channels[2]-= 173;
+        rx[3] = 0.000610128f * channels[2];
+
         if ( rx[3] > 1 ) rx[3] = 1;
-        
+
         aux[CH_FLIP] = (channels[5] > 993) ? 1 : 0;
 		aux[CH_EXPERT] = (channels[6] > 993) ? 1 : 0;
 		aux[CH_HEADFREE] = (channels[7] > 993) ? 1 : 0;
 		aux[CH_RTH] = (channels[8] > 993) ? 1 : 0;
-        
-        time_lastframe = gettime(); 
-        if (sbus_stats) stat_frames_accepted++;       
+
+        time_lastframe = gettime();
+        if (sbus_stats) stat_frames_accepted++;
     }
- 
+
 
 // stats
     static int fps = 0;
     static unsigned long secondtime = 0;
-    
+
     if ( gettime() - secondtime > 1000000 )
     {
        stat_frames_second = fps;
@@ -331,8 +331,8 @@ if ( frame_received )
        secondtime = gettime();
     }
     fps++;
-    
-frame_received = 0;    
+
+frame_received = 0;
 } // end frame received
 
 
@@ -347,6 +347,3 @@ if ( gettime() - time_lastframe > 1000000 )
 }
 
 #endif
-
-
-

@@ -12,7 +12,7 @@ extern void failloop( int);
 // value 32 bit to write
 void writeword( unsigned long address, unsigned long value)
 {
-	int test = FLASH_ProgramWord( FLASH_ADDR + (address<<2), value);	
+	int test = FLASH_ProgramWord( FLASH_ADDR + (address<<2), value);
 	if ( test != FLASH_COMPLETE )
 	{
 		FLASH_Lock();
@@ -38,7 +38,7 @@ void fmc_lock() {
 }
 
 int fmc_erase( void )
-{	
+{
 	int test = FLASH_ErasePage( FLASH_ADDR );
 	if ( test != FLASH_COMPLETE ) FLASH_Lock();
     else return 0;
@@ -52,5 +52,3 @@ unsigned long fmc_read(unsigned long address)
 	unsigned int *addressptr = (unsigned int *)address;
 	return (*addressptr);
 }
-
-

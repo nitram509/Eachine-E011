@@ -105,7 +105,7 @@ void rx_init()
 #ifndef TX_POWER
 #define TX_POWER 7
 #endif
-	
+
 // Gauss filter amplitude - lowest
 static uint8_t demodcal[2] = { 0x39 , B00000001 };
 writeregs( demodcal , sizeof(demodcal) );
@@ -113,7 +113,7 @@ writeregs( demodcal , sizeof(demodcal) );
 // powerup defaults
 //static uint8_t rfcal2[7] = { 0x3a , 0x45 , 0x21 , 0xef , 0xac , 0x3a , 0x50};
 //writeregs( rfcal2 , sizeof(rfcal2) );
-	
+
 #define XN_TO_RX B10001111
 #define XN_TO_TX B10000010
 #define XN_POWER B00000001|((TX_POWER&7)<<3)
@@ -149,10 +149,10 @@ writeregs( demodcal , sizeof(demodcal) );
     delay(100);
 
 // write rx address " 0 0 0 0 0 "
-        
+
    static uint8_t rxaddr[6] = { 0x2a , 0 , 0 , 0 , 0 , 0  };
    writeregs( rxaddr , sizeof(rxaddr) );
-    
+
     xn_writereg(EN_AA, 0);      // aa disabled
     xn_writereg(EN_RXADDR, 1);  // pipe 0 only
     xn_writereg(RF_SETUP, XN_POWER);    // power / data rate / lna
@@ -178,7 +178,7 @@ writeregs( demodcal , sizeof(demodcal) );
     xn_writereg(0, XN_TO_RX);   // power up, crc enabled, rx mode
 
 #ifdef RADIO_CHECK
-    int rxcheck = xn_readreg(0x0f); // rx address pipe 5   
+    int rxcheck = xn_readreg(0x0f); // rx address pipe 5
     // should be 0xc6
     extern void failloop(int);
     if (rxcheck != 0xc6)
@@ -274,12 +274,12 @@ void send_telemetry()
     txdata[1] = lowbatt;
 
     int vbatt = vbattfilt * 100;
-// battery volt filtered    
+// battery volt filtered
     txdata[3] = (vbatt >> 8) & 0xff;
     txdata[4] = vbatt & 0xff;
 
     vbatt = vbatt_comp * 100;
-// battery volt compensated 
+// battery volt compensated
     txdata[5] = (vbatt >> 8) & 0xff;
     txdata[6] = vbatt & 0xff;
 
@@ -326,7 +326,7 @@ static char checkpacket()
       }
     if ((status & B00001110) != B00001110)
       {
-          // rx fifo not empty        
+          // rx fifo not empty
           return 2;
       }
 
@@ -357,7 +357,7 @@ static int decodepacket(void)
                 rx[0] = packettodata(&rxdata[4]);
                 rx[1] = packettodata(&rxdata[6]);
                 rx[2] = packettodata(&rxdata[10]);
-                // throttle     
+                // throttle
                 rx[3] =
                     ((rxdata[8] & 0x0003) * 256 +
                      rxdata[9]) * 0.000976562f;
@@ -407,7 +407,7 @@ static int decodepacket(void)
                       lastaux[i] = aux[i];
                   }
 
-                return 1;       // valid packet 
+                return 1;       // valid packet
             }
           return 0;             // sum fail
       }
@@ -454,15 +454,15 @@ void checkrx(void)
                             telemetry_enabled = 1;
                             packet_period = PACKET_PERIOD_TELEMETRY;
                         }
-                        
+
                       rfchannel[0] = rxdata[6];
                       rfchannel[1] = rxdata[7];
                       rfchannel[2] = rxdata[8];
                       rfchannel[3] = rxdata[9];
-                        
+
 
                       uint8_t rxaddr[6] = { 0x2a ,  };
-                      
+
                       for ( int i = 1 ; i < 6; i++)
                       {
                         rxaddr[i] = rxdata[i];
@@ -470,11 +470,11 @@ void checkrx(void)
                       // write new rx address
                       writeregs( rxaddr , sizeof(rxaddr) );
                       rxaddr[0] = 0x30; // tx register ( write ) number
-                      
+
                       // write new tx address
                       writeregs( rxaddr , sizeof(rxaddr) );
 
-                      xn_writereg(0x25, rfchannel[rf_chan]);    // Set channel frequency 
+                      xn_writereg(0x25, rfchannel[rf_chan]);    // Set channel frequency
                       rxmode = RX_MODE_NORMAL;
 
 #ifdef SERIAL
@@ -483,7 +483,7 @@ void checkrx(void)
                   }
             }
           else
-            {                   // normal mode  
+            {                   // normal mode
 #ifdef RXDEBUG
                 channelcount[rf_chan]++;
                 packettime = gettime() - lastrxtime;
@@ -535,7 +535,7 @@ void checkrx(void)
     if (time - lastrxtime > (HOPPING_NUMBER * packet_period + 1000)
         && rxmode != RX_MODE_BIND)
       {
-          //  channel with no reception   
+          //  channel with no reception
           lastrxtime = time;
           // set channel to last with reception
           if (!timingfail)
