@@ -66,12 +66,12 @@ void start_flip()
 
 flipindex = 0;
 flipdir = 0;
-	if ( fabsf(rx[0]) < fabsf(rx[1]) )
+	if ( fabsf(rx[ROLL]) < fabsf(rx[PITCH]) )
 	{
 		flipindex = 1;
-		if ( rx[1] > 0 ) flipdir = 1;
+		if ( rx[PITCH] > 0 ) flipdir = 1;
 	}
-	else if ( rx[0] > 0 ) flipdir = 1;
+	else if ( rx[ROLL] > 0 ) flipdir = 1;
 }
 
 
@@ -161,9 +161,9 @@ void flip_sequencer()
 
 		case STAGE_FLIP_LEVELMODE:
 			// allow control in other axis at this point
-		  rx_override[0] = rx[0];
-		  rx_override[1] = rx[1];
-		  rx_override[2] = rx[2];
+		  rx_override[0] = rx[ROLL];
+		  rx_override[1] = rx[PITCH];
+		  rx_override[2] = rx[YAW];
 
 			if ( flipdir )
 			rx_override[flipindex] = (float) LEVEL_MODE_ANGLE / (float) MAX_ANGLE_HI;

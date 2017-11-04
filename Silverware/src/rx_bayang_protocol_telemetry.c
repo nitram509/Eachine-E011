@@ -362,9 +362,9 @@ static int decodepacket(void)
                      rxdata[9]) * 0.000976562f;
 
 #ifndef DISABLE_EXPO
-                rx[0] = rcexpo(rx[0], EXPO_XY);
-                rx[1] = rcexpo(rx[1], EXPO_XY);
-                rx[2] = rcexpo(rx[2], EXPO_YAW);
+                rx[ROLL] = rcexpo(rx[ROLL], EXPO_XY);
+                rx[PITCH] = rcexpo(rx[PITCH], EXPO_XY);
+                rx[YAW] = rcexpo(rx[YAW], EXPO_YAW);
 #endif
 
 
