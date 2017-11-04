@@ -140,11 +140,10 @@ static int decodepacket( void)
 		 }
 		if ( (sum&0xFF) == rxdata[14] )
 		{
-			rx[0] = packettodata( &rxdata[4] );
-			rx[1] = packettodata( &rxdata[6] );
-			rx[2] = packettodata( &rxdata[10] );
-		// throttle
-			rx[3] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
+			rx[ROLL] = packettodata( &rxdata[4] );
+			rx[PITCH] = packettodata( &rxdata[6] );
+			rx[YAW] = packettodata( &rxdata[10] );
+			rx[THROTTLE] = ( (rxdata[8]&0x0003) * 256 + rxdata[9] ) * 0.000976562;
 
 #ifndef DISABLE_EXPO
 	rx[0] = rcexpo ( rx[0] , EXPO_XY );
@@ -369,10 +368,10 @@ unsigned long temptime = gettime();
 	if (time - failsafetime > FAILSAFETIME)
 	  {	//  failsafe
 		  failsafe = 1;
-		  rx[0] = 0;
-		  rx[1] = 0;
-		  rx[2] = 0;
-		  rx[3] = 0;
+		  rx[ROLL] = 0;
+		  rx[PITCH] = 0;
+		  rx[YAW] = 0;
+		  rx[THROTTLE] = 0;
 	  }
 #ifdef RXDEBUG
 	if (gettime() - secondtimer > 1000000)

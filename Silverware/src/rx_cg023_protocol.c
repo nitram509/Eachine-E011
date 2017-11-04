@@ -166,8 +166,7 @@ int decode_cg023( void)
 		if ( rxdata[1] != txid[0] || rxdata[2] != txid[1] ) return 0;
 
 // throttle
-		rx[3] = 0.00390625f * rxdata[5];
-
+		rx[THROTTLE] = 0.00390625f * rxdata[5];
 
 		// swapped yaw - roll (mode 3)
 			if ( rxdata[6] >= 0x80 )
@@ -300,10 +299,10 @@ void checkrx( void)
 		if( time - failsafetime > FAILSAFETIME )
 		{//  failsafe
 		  failsafe = 1;
-			rx[0] = 0;
-			rx[1] = 0;
-			rx[2] = 0;
-			rx[3] = 0;
+			rx[ROLL] = 0;
+			rx[PITCH] = 0;
+			rx[YAW] = 0;
+			rx[THROTTLE] = 0;
 		}
 #ifdef RXDEBUG
 		// packets per second counter

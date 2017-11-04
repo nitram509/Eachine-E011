@@ -296,20 +296,18 @@ if ( frame_received )
         channels[1] -= 993;
         channels[3] -= 993;
 
-        rx[0] = channels[0];
-        rx[1] = channels[1];
-        rx[2] = channels[3];
-
+        rx[ROLL] = channels[0];
+        rx[PITCH] = channels[1];
+        rx[YAW] = channels[3];
         for ( int i = 0 ; i < 3 ; i++)
         {
          rx[i] *= 0.00122026f;
         }
 
         channels[2]-= 173;
-        rx[3] = 0.000610128f * channels[2];
+        rx[THROTTLE] = 0.000610128f * channels[2];
 
-        if ( rx[3] > 1 ) rx[3] = 1;
-
+        if ( rx[THROTTLE] > 1 ) rx[THROTTLE] = 1;
         aux[CH_FLIP] = (channels[5] > 993) ? 1 : 0;
 		aux[CH_EXPERT] = (channels[6] > 993) ? 1 : 0;
 		aux[CH_HEADFREE] = (channels[7] > 993) ? 1 : 0;

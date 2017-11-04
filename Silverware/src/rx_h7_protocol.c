@@ -138,13 +138,10 @@ void nextchannel(void)
 int decode_h7(void) {
 	if (rxdata[8] != calc_checksum() ) return 0;
 
-		rx[3] = 0.0045000f * (225 - rxdata[0]);
-
-		rx[1] = ( ((int)rxdata[3]) - 112) * 0.00888888f;
-
-		rx[0] = ( ((int)rxdata[2]) - 112) * 0.00888888f; // roll
-
-		rx[2] = (-((int)rxdata[1]) + 112) * 0.00888888f;
+		rx[ROLL]  = ( ((int)rxdata[2]) - 112) * 0.00888888f;
+		rx[PITCH] = ( ((int)rxdata[3]) - 112) * 0.00888888f;
+		rx[YAW]   = (-((int)rxdata[1]) + 112) * 0.00888888f;
+		rx[THROTTLE] = 0.0045000f * (225 - rxdata[0]);
 
 		//rxdata[4] L-R: default:32, (63..1)
 		//rxdata[5] F-B: default:32, (1..63)
@@ -231,10 +228,10 @@ unsigned long time = gettime();
 
 	if (time - failsafetime > FAILSAFETIME) {	//  failsafe
 		failsafe = 1;
-		rx[0] = 0;
-		rx[1] = 0;
-		rx[2] = 0;
-		rx[3] = 0;
+		rx[ROLL] = 0;
+		rx[PITCH] = 0;
+		rx[YAW] = 0;
+		rx[THROTTLE] = 0;
 	}
 }
 
