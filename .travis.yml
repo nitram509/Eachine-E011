@@ -32,10 +32,8 @@ install:
 script:
     - ls
     - cd gcc
-    - make $TARGET
     - make clean
     - make $TARGET
- #   - arm-none-eabi-size h8mini.elf
 
 deploy:
   provider: s3
@@ -46,4 +44,4 @@ deploy:
   bucket: "eachine-e011-builds"
   skip_cleanup: true
   region: eu-central-1
-  file: "bwhoop.elf"
+  file: "bwhoop.hex"
