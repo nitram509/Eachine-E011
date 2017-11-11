@@ -58,8 +58,6 @@ float thrsum;
 float error[PIDNUMBER];
 float motormap( float input);
 
-float yawangle;
-
 extern float looptime;
 
 extern char auxchange[AUXNUMBER];
