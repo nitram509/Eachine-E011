@@ -78,10 +78,6 @@ float lastrx[3];
 unsigned int consecutive[3];
 #endif
 
-unsigned long timecommand = 0;
-
-
-
 float overthrottlefilt = 0;
 float underthrottlefilt = 0;
 

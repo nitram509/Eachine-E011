@@ -79,8 +79,6 @@ float lastrx[3];
 unsigned int consecutive[3];
 #endif
 
-unsigned long timecommand = 0;
-
 extern int controls_override;
 extern float rx_override[];
 extern int acro_override;
