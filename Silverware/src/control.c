@@ -88,11 +88,13 @@ float underthrottlefilt = 0;
 
 float rxcopy[4];
 
-void control( void)
+static inline void check_for_accelerometer_calibration_command(void);
+
+void control(void)
 {
 
-// rates / expert mode
-float rate_multiplier = 1.0;
+	// rates / expert mode
+	float rate_multiplier = 1.0;
 
 	if ( aux[RATES]  )
 	{
@@ -132,113 +134,72 @@ float rate_multiplier = 1.0;
 	}
 #endif
 
-	// check for accelerometer calibration command
+#ifndef DISABLE_GESTURES2
 	if ( onground )
 	{
-		#ifndef DISABLE_GESTURES2
-		int command = gestures2();
+		check_for_accelerometer_calibration_command();
+	}
+#endif
 
-		if (command!=GESTURE_NONE)
-        {
-            if (command == GESTURE_DDD)
-		    {
+// Change mode LEVEL / ACRO via Devo Channel 5
+if (auxchange[CH_INV])
+{
+	aux[LEVELMODE] = (0 == aux[CH_INV]) ? 1 : 0;
+	ledcommand = 1;
+}
 
-                //skip accel calibration if pid gestures used
-                if ( !pid_gestures_used )
-                {
-                    gyro_cal();	// for flashing lights
-                    acc_cal();
-                }
-                else
-                {
-                    ledcommand = 1;
-                    pid_gestures_used = 0;
-                }
-                #ifdef FLASH_SAVE2
-                extern float accelcal[3];
-                flash2_fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
-                #endif
-
-                #ifdef FLASH_SAVE1
-			    extern void flash_save( void);
-                extern void flash_load( void);
-                flash_save( );
-                flash_load( );
-                #endif
-			    // reset loop time
-			    extern unsigned long lastlooptime;
-			    lastlooptime = gettime();
-		    }
-
-            if (command == GESTURE_RRD)
-              {
-                  aux[CH_AUX1] = 1;
-                  ledcommand = 1;
-              }
-            if (command == GESTURE_LLD)
-              {
-                  ledcommand = 1;
-                  aux[CH_AUX1] = 0;
-              }
-            #ifdef PID_GESTURE_TUNING
-            if ( command >= GESTURE_UDR ) pid_gestures_used = 1;
-
-           // int blink = 0;
-            if (command == GESTURE_UDU)
-              {
-                        // Cycle to next pid term (P I D)
-                        ledblink = next_pid_term();
-              }
-            if (command == GESTURE_UDD)
-              {
-                        // Cycle to next axis (Roll Pitch Yaw)
-                        ledblink = next_pid_axis();
-              }
-            if (command == GESTURE_UDR)
-              {
-                  // Increase by 10%
-                        ledblink = increase_pid();
-              }
-            if (command == GESTURE_UDL)
-              {
-                        // Descrease by 10%
-                  ledblink = decrease_pid();
-              }
-                // U D U - Next PID term
-                // U D D - Next PID Axis
-                // U D R - Increase value
-                // U D L - Descrease value
-               // ledblink = blink; //Will cause led logic to blink the number of times ledblink has stored in it.
-                #endif
-
-	  }
-		#endif
+if (!aux[LEVELMODE])
+{
+	// In Acro-Mode: Switch ARMING and ensure min-throttle
+	if (auxchange[CH_FLIP])
+	{
+		if (aux[CH_FLIP] && rx[THROTTLE] < 0.05f)
+		{
+			ledcommand = 1;
+			aux[ARMED] = 1;
+		}
+		else
+		{
+			// do not arm, when throttle is too high
+			aux[ARMED] = 0;
+			rx[THROTTLE] = 0.0f;
+		}
 	}
 
+	// ensure, motor idle spin when armed
+	if (aux[ARMED])
+	{
+		if (rx[THROTTLE] < 0.11f)
+		{
+			rx[THROTTLE] = 0.11f;
+		}
+	}
+	else
+	{
+		rx[THROTTLE] = 0;
+	}
+}
 
 pid_precalc();
 
+// flight control
+if (aux[LEVELMODE]&&!acro_override)
+	{	   // level mode
+				 // level calculations done after to reduce latency in acro mode
 
-	// flight control
-	if (aux[LEVELMODE]&&!acro_override)
-	  {	   // level mode
-           // level calculations done after to reduce latency in acro mode
+	}
+else
+	{	// rate mode
+		error[0] = rxcopy[0] * (float) MAX_RATE * DEGTORAD  - gyro[0];
+		error[1] = rxcopy[1] * (float) MAX_RATE * DEGTORAD  - gyro[1];
+		error[2] = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD  - gyro[2];
+	}
 
-	  }
-	else
-	  {	// rate mode
-		  error[0] = rxcopy[0] * (float) MAX_RATE * DEGTORAD  - gyro[0];
-		  error[1] = rxcopy[1] * (float) MAX_RATE * DEGTORAD  - gyro[1];
-      error[2] = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD  - gyro[2];
-	  }
+pid(0);
+pid(1);
+pid(2);
 
-
-	pid(0);
-	pid(1);
-	pid(2);
-
-
-float	throttle;
+float	throttle = 0;
 
 // map throttle so under 10% it is zero
 if ( rx[THROTTLE] < 0.1f ) throttle = 0;
@@ -733,4 +694,82 @@ float clip_ff(float motorin, int number)
 	return motorin;
 }
 
+static inline void check_for_accelerometer_calibration_command()
+{
+	int command = gestures2();
+	if ( command != GESTURE_NONE )
+	{
+		if ( command == GESTURE_DDD )
+		{
 
+			//skip accel calibration if pid gestures used
+			if ( !pid_gestures_used )
+			{
+				gyro_cal();  // for flashing lights
+				acc_cal();
+			}
+			else
+			{
+				ledcommand = 1;
+				pid_gestures_used = 0;
+			}
+
+		#ifdef FLASH_SAVE2
+      extern float accelcal[3];
+      flash2_fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
+		#endif
+
+		#ifdef FLASH_SAVE1
+			extern void flash_save( void );
+			extern void flash_load( void );
+			flash_save();
+			flash_load();
+		#endif
+			// reset loop time
+			extern unsigned long lastlooptime;
+			lastlooptime = gettime();
+		}
+
+		if ( command == GESTURE_RRD )
+		{
+			aux[CH_AUX1] = 1;
+			ledcommand = 1;
+		}
+		if ( command == GESTURE_LLD )
+		{
+			ledcommand = 1;
+			aux[CH_AUX1] = 0;
+		}
+
+		#ifdef PID_GESTURE_TUNING
+			if ( command >= GESTURE_UDR ) pid_gestures_used = 1;
+
+			// int blink = 0;
+			if ( command == GESTURE_UDU )
+			{
+				// Cycle to next pid term (P I D)
+				ledblink = next_pid_term();
+			}
+			if ( command == GESTURE_UDD )
+			{
+				// Cycle to next axis (Roll Pitch Yaw)
+				ledblink = next_pid_axis();
+			}
+			if ( command == GESTURE_UDR )
+			{
+				// Increase by 10%
+				ledblink = increase_pid();
+			}
+			if ( command == GESTURE_UDL )
+			{
+				// Descrease by 10%
+				ledblink = decrease_pid();
+			}
+			// U D U - Next PID term
+			// U D D - Next PID Axis
+			// U D R - Increase value
+			// U D L - Descrease value
+			// ledblink = blink; //Will cause led logic to blink the number of times ledblink has stored in it.
+		#endif
+	}
+}

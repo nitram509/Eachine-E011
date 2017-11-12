@@ -103,6 +103,7 @@
 #define RATES CH_EXPERT
 
 #define LEVELMODE CH_AUX1
+#define ARMED CH_AUX2
 
 #define STARTFLIP CH_FLIP
 
