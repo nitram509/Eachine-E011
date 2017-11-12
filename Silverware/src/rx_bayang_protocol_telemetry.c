@@ -252,10 +252,7 @@ void beacon_sequence()
               beacon_seq_state = 0;
               break;
 
-
-
       }
-
 }
 
 
@@ -269,7 +266,9 @@ void send_telemetry()
 
     int txdata[15];
     for (int i = 0; i < 15; i++)
-        txdata[i] = i;
+    {
+      txdata[i] = i;
+    }
     txdata[0] = 133;
     txdata[1] = lowbatt;
 
@@ -299,13 +298,9 @@ void send_telemetry()
       }
 
     txdata[14] = sum;
-
     xn_command(FLUSH_TX);
-
     xn_writereg(0, XN_TO_TX);
-
     xn_writepayload(txdata, 15);
-
     send_time = gettime();
 
     return;
@@ -382,21 +377,14 @@ static int decodepacket(void)
                       }
 #else
                 aux[CH_INV] = (rxdata[3] & 0x80) ? 1 : 0;   // inverted flag
-
                 aux[CH_VID] = (rxdata[2] & 0x10) ? 1 : 0;
-
                 aux[CH_PIC] = (rxdata[2] & 0x20) ? 1 : 0;
 #endif
 
                 aux[CH_FLIP] = (rxdata[2] & 0x08) ? 1 : 0;
-
                 aux[CH_EXPERT] = (rxdata[1] == 0xfa) ? 1 : 0;
-
                 aux[CH_HEADFREE] = (rxdata[2] & 0x02) ? 1 : 0;
-
                 aux[CH_RTH] = (rxdata[2] & 0x01) ? 1 : 0;   // rth channel
-
-
 
                 for (int i = 0; i < AUXNUMBER - 2; i++)
                   {
